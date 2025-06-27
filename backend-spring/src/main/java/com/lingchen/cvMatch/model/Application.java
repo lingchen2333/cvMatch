@@ -20,18 +20,10 @@ public class Application {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Size(max = 50)
     private String jobUrl;
-
-    @Size(max = 20)
     private String companyName;
-
-    @Size(max = 50)
     private String jobTitle;
-
     private LocalDate dateApplied;
-
-    @Size(max = 20)
     private String status;
 
     @ManyToOne

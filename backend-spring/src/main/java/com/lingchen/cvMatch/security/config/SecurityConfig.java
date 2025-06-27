@@ -5,7 +5,6 @@ import com.lingchen.cvMatch.security.jwt.AuthTokenFilter;
 import com.lingchen.cvMatch.security.jwt.JwtEntryPoint;
 import com.lingchen.cvMatch.security.user.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,20 +30,17 @@ import java.util.List;
 @EnableMethodSecurity
 @RequiredArgsConstructor
 @Configuration
-public class Config {
+public class SecurityConfig {
     @Value("${api.prefix}")
     private static String API;
+
     private static final List<String> SECURED_URLS =
             List.of(API + "/applications/**");
     private final UserDetailsServiceImpl userDetailsService;
     private final JwtEntryPoint jwtEntryPoint;
+
     @Value("${frontend.url}")
     private String frontendUrl;
-
-    @Bean
-    public ModelMapper modelMapper() {
-        return new ModelMapper();
-    }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
