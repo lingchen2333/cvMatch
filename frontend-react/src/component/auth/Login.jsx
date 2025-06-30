@@ -2,10 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { login } from "../../store/features/authSlice";
-import FormRow from "../common/FormRow";
+import FormRow from "../common/form/FormRow";
 import Button from "../common/Button";
 import toast from "react-hot-toast";
-import Logo from "../common/Logo";
 
 const Login = () => {
   const [credentials, setCredentials] = useState({

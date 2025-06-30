@@ -79,7 +79,7 @@ const Applications = () => {
 
   return (
     <div className="flex flex-col gap-y-5">
-      <h1 className="text-xl font-medium">All Applications</h1>
+      <h1 className="ms-5 text-xl font-medium">All Applications</h1>
 
       <div className="overflow-x-auto">
         {applications?.length > 0 ? (

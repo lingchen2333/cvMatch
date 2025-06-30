@@ -5,7 +5,6 @@ export const getApplicationsByUserId = createAsyncThunk(
   "app/getApplicationsByUserId",
   async (userId) => {
     const response = await authApi.get(`/users/${userId}/applications`);
-    console.log("get applications by user id:", response.data);
     return response.data;
   },
 );
@@ -21,6 +20,15 @@ export const updateApplicationById = createAsyncThunk(
       status: application.status,
     });
     console.log("update applications by id:", response.data);
+    return response.data;
+  },
+);
+
+export const addApplication = createAsyncThunk(
+  "app/addApplication",
+  async (application) => {
+    const response = await authApi.post(`/applications`, application);
+    console.log("add application:", response.data);
     return response.data;
   },
 );
@@ -51,14 +59,6 @@ const applicationSlice = createSlice({
       state.totalPages = action.payload.data.totalPages;
       state.lastPage = action.payload.data.lastPage;
     });
-    // .addCase(placeOrder.rejected, (state, action) => {
-    //   state.errorMessage = action.error.message;
-    //   state.isLoading = false;
-    // })
-    // .addCase(getOrdersByUserId.fulfilled, (state, action) => {
-    //   state.orders = action.payload.data;
-    //   state.isLoading = false;
-    // });
   },
 });
 
