@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { authApi } from "../../api/api";
+import { authApi } from "../../service/api";
 import { jwtDecode } from "jwt-decode";
 
 export const login = createAsyncThunk(
@@ -20,14 +20,22 @@ export const authSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(login.fulfilled, (state, action) => {
-      const decodedToken = jwtDecode(action.payload.accessToken);
-      state.isAuthenticated = true;
-      state.accessToken = action.payload.accessToken;
+    builder
+      .addCase(login.fulfilled, (state, action) => {
+        const decodedToken = jwtDecode(action.payload.accessToken);
+        state.isAuthenticated = true;
+        state.accessToken = action.payload.accessToken;
 
-      localStorage.setItem("accessToken", action.payload.accessToken);
-      localStorage.setItem("userId", decodedToken.id);
-    });
+        localStorage.setItem("accessToken", action.payload.accessToken);
+        localStorage.setItem("userId", decodedToken.id);
+      })
+      .addCase(login.rejected, (state) => {
+        state.isAuthenticated = false;
+        state.accessToken = null;
+
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("userId");
+      });
   },
 });
 

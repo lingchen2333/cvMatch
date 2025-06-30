@@ -2,17 +2,19 @@ import React from "react";
 import { Outlet } from "react-router-dom";
 import NavBar from "../layout/NavBar";
 import Footer from "./Footer";
+import SideBar from "./SideBar";
 
 export const RootLayout = () => {
   return (
-    <main className="grid h-dvh grid-rows-[auto_1fr_auto]">
+    <main className="font-poppins">
       <NavBar />
-      <div className="overflow-scroll">
-        <main className="mx-auto my-auto">
+
+      <div className="flex h-dvh overflow-hidden">
+        <SideBar />
+        <div className="mx-2 mt-5 flex-1 overflow-auto">
           <Outlet />
-        </main>
+        </div>
       </div>
-      <Footer />
     </main>
   );
 };
