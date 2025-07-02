@@ -48,49 +48,51 @@ const Login = () => {
   };
 
   return (
-    <div className="mx-auto my-10 flex w-full flex-col items-center justify-between space-y-12 md:my-16 md:w-2xl">
-      <h4 className="text-4xl font-medium">Hello Again!</h4>
+    <div className="h-screen bg-slate-100">
+      <div className="mx-auto my-10 flex w-full flex-col items-center justify-between space-y-12 md:my-16 md:w-2xl">
+        <h4 className="text-4xl font-medium">Hello Again!</h4>
 
-      <form
-        className="w-3/4 space-y-6 rounded-2xl bg-white p-4"
-        onSubmit={handleLogin}
-      >
-        <div className="space-y-4">
-          <FormRow
-            name="email"
-            type="email"
-            placeholder="Enter your email address"
-            value={credentials.email}
-            required={true}
-            handleChange={handleInputChange}
-          />
+        <form
+          className="w-3/4 space-y-6 rounded-2xl bg-white p-4"
+          onSubmit={handleLogin}
+        >
+          <div className="space-y-4">
+            <FormRow
+              name="email"
+              type="email"
+              placeholder="Enter your email address"
+              value={credentials.email}
+              required={true}
+              handleChange={handleInputChange}
+            />
 
-          <FormRow
-            name="password"
-            type="password"
-            placeholder="Enter your password"
-            value={credentials.password}
-            required={true}
-            handleChange={handleInputChange}
-          />
-        </div>
+            <FormRow
+              name="password"
+              type="password"
+              placeholder="Enter your password"
+              value={credentials.password}
+              required={true}
+              handleChange={handleInputChange}
+            />
+          </div>
 
-        <Button className="flex w-full" type="submit" style="blue">
-          Sign in
-        </Button>
+          <Button className="flex w-full" type="submit" style="blue">
+            Sign in
+          </Button>
 
-        <div className="text-center text-sm">
-          <p className="text-gray-600">
-            Don't have an account yet?{" "}
-            <Link
-              to="/register"
-              className="font-medium text-blue-700 transition-colors duration-200 hover:text-blue-500"
-            >
-              Register here
-            </Link>
-          </p>
-        </div>
-      </form>
+          <div className="text-center text-sm">
+            <p className="text-gray-600">
+              Don't have an account yet?{" "}
+              <Link
+                to="/register"
+                className="font-medium text-blue-700 transition-colors duration-200 hover:text-blue-500"
+              >
+                Register here
+              </Link>
+            </p>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };

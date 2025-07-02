@@ -7,7 +7,14 @@ import toast from "react-hot-toast";
 
 const AddApplication = () => {
   const dispatch = useDispatch();
-  const [application, setApplication] = useState({});
+  const today = new Date().toISOString().split("T")[0];
+  const [application, setApplication] = useState({
+    companyName: "",
+    jobTitle: "",
+    dateApplied: today,
+    status: "",
+    jobUrl: "",
+  });
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -33,7 +40,7 @@ const AddApplication = () => {
       <h1 className="ms-5 text-xl font-medium">Add Application</h1>
 
       <form
-        className="space-y-6 rounded-2xl bg-white p-4 md:w-2xl"
+        className="space-y-6 rounded-2xl p-4 md:w-2xl"
         onSubmit={handleSubmit}
       >
         <FormRow
@@ -77,11 +84,11 @@ const AddApplication = () => {
         />
 
         <FormRow
-          name="jobURl"
+          name="jobUrl"
           labelText="job URL"
           type="string"
           placeholder="Enter job url"
-          value={application.jobURl}
+          value={application.jobUrl}
           required={true}
           handleChange={handleInputChange}
         />

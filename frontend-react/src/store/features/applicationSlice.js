@@ -33,6 +33,15 @@ export const addApplication = createAsyncThunk(
   },
 );
 
+export const deleteApplication = createAsyncThunk(
+  "app/deleteApplication",
+  async (applicationId) => {
+    const response = await authApi.delete(`/applications/${applicationId}`);
+    console.log("delete application:", response.data);
+    return response.data;
+  },
+);
+
 const initialState = {
   applications: [],
   pageNumber: 0,

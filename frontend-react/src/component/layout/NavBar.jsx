@@ -13,7 +13,7 @@ const handleLogout = () => {
 const NavBar = () => {
   const userId = localStorage.getItem("userId");
   return (
-    <nav className="sticky flex justify-between border-b border-b-slate-200 px-4 py-4 shadow md:px-10">
+    <nav className="sticky top-0 z-20 flex justify-between border-b border-b-slate-200 bg-white px-4 py-4 shadow md:px-10">
       <div className="flex items-center">
         <Logo className="h-7 md:h-10" />
         <h2 to="/" className="font-bold tracking-widest md:text-2xl">

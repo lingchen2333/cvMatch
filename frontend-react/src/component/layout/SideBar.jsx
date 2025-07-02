@@ -10,9 +10,9 @@ import {
 
 const SideBar = () => {
   return (
-    <aside className="sticky top-0 hidden h-screen w-1/4 flex-col lg:flex xl:w-1/5">
-      <div className="flex h-full flex-col justify-between bg-white px-12">
-        <div className="mt-20 flex flex-col items-center justify-center space-y-10 capitalize">
+    <aside className="hidden h-full shrink-0 flex-col border-r border-slate-200 bg-white pt-8 shadow-md lg:flex xl:w-1/6">
+      <div className="flex h-full flex-col justify-between">
+        <div className="flex flex-col items-center justify-center space-y-8 capitalize">
           <SidebarNavLink id={1} to="/" text="home" icon={<HiOutlineHome />} />
           <SidebarNavLink
             id={2}

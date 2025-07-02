@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  deleteApplication,
   getApplicationsByUserId,
   setApplications,
   updateApplicationById,
 } from "../../store/features/applicationSlice";
 import {
+  Dropdown,
+  DropdownItem,
   Table,
   TableBody,
   TableCell,
@@ -17,6 +20,8 @@ import { FaTimes } from "react-icons/fa";
 import toast from "react-hot-toast";
 import TableEditCell from "../common/table/TableEditCell";
 import TableTextButton from "../common/table/TableTextButton";
+import Button from "../common/Button";
+import { HiOutlineLink } from "react-icons/hi";
 
 const Applications = () => {
   const dispatch = useDispatch();
@@ -33,6 +38,8 @@ const Applications = () => {
 
   const [editingIndex, setEditingIndex] = useState(null);
   const [editValues, setEditValues] = useState({});
+  const [deleteIndex, setDeleteIndex] = useState(null);
+  const [deleteId, setDeleteId] = useState(null);
 
   useEffect(() => {
     dispatch(getApplicationsByUserId(userId));
@@ -41,6 +48,22 @@ const Applications = () => {
   const handleEditClick = (index) => {
     setEditingIndex(index);
     setEditValues(applications[index]);
+  };
+
+  const handleDelete = async (applicationId, index) => {
+    const previousApplications = [...applications];
+    const newApplications = applications.filter((app, i) => i != index);
+    dispatch(setApplications(newApplications));
+
+    try {
+      const response = await dispatch(
+        deleteApplication(applicationId),
+      ).unwrap();
+      toast.success(response.message);
+    } catch (error) {
+      toast.error("Application can't be deleted");
+      dispatch(setApplications(previousApplications));
+    }
   };
 
   const handleInputChange = (e) => {
@@ -88,9 +111,9 @@ const Applications = () => {
               <TableRow>
                 <TableHeadCell className="w-[10%]">Company</TableHeadCell>
                 <TableHeadCell className="w-[10%]">Title</TableHeadCell>
-                <TableHeadCell className="w-[10%]">Date Applied</TableHeadCell>
+                <TableHeadCell className="w-[15%]">Date Applied</TableHeadCell>
                 <TableHeadCell className="w-[15%]">Status</TableHeadCell>
-                <TableHeadCell className="w-[35%]">url</TableHeadCell>
+                <TableHeadCell className="w-[30%]">url</TableHeadCell>
                 <TableHeadCell className="w-[10%]">
                   <span className="sr-only">Edit</span>
                 </TableHeadCell>
@@ -103,6 +126,7 @@ const Applications = () => {
                   className="relative border-slate-300 bg-white"
                 >
                   {editingIndex === index ? (
+                    // edit the row
                     <>
                       <TableEditCell
                         name="companyName"
@@ -150,6 +174,7 @@ const Applications = () => {
                       </TableCell>
                     </>
                   ) : (
+                    // display the row
                     <>
                       <TableCell className="font-medium whitespace-nowrap text-gray-900 dark:text-white">
                         {application.companyName}
@@ -157,14 +182,28 @@ const Applications = () => {
                       <TableCell>{application.jobTitle}</TableCell>
                       <TableCell>{application.dateApplied}</TableCell>
                       <TableCell>{application.status}</TableCell>
-                      <TableCell>{application.jobUrl}</TableCell>
                       <TableCell>
-                        <TableTextButton
-                          onClick={() => handleEditClick(index)}
-                          className="text-blue-700 hover:text-blue-500"
+                        <a href={`${application.jobUrl}`} target="_blank">
+                          <HiOutlineLink />
+                        </a>
+                      </TableCell>
+                      <TableCell className=" ">
+                        <Dropdown
+                          label={<span className="text-2xl"></span>}
+                          inline
                         >
-                          Edit
-                        </TableTextButton>
+                          <DropdownItem onClick={() => handleEditClick(index)}>
+                            Edit
+                          </DropdownItem>
+                          <DropdownItem
+                            onClick={() => {
+                              setDeleteIndex(index);
+                              setDeleteId(application.id);
+                            }}
+                          >
+                            Delete
+                          </DropdownItem>
+                        </Dropdown>
                       </TableCell>
                     </>
                   )}
@@ -180,6 +219,39 @@ const Applications = () => {
           </>
         )}
       </div>
+
+      {deleteIndex !== null && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-50/50">
+          <div className="w-full max-w-sm rounded-lg bg-white p-6 shadow-lg">
+            <h2 className="mb-4 text-lg font-semibold">Delete Application</h2>
+            <p className="mb-6">
+              Are you sure you want to delete this application?
+            </p>
+            <div className="flex justify-end gap-4">
+              <button
+                className="rounded bg-gray-200 px-4 py-2 hover:bg-gray-300"
+                onClick={() => {
+                  setDeleteIndex(null);
+                  setDeleteId(null);
+                }}
+              >
+                Cancel
+              </button>
+
+              <button
+                className="rounded bg-red-600 px-4 py-2 text-white hover:bg-red-700"
+                onClick={() => {
+                  handleDelete(deleteId, deleteIndex);
+                  setDeleteIndex(null);
+                  setDeleteId(null);
+                }}
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

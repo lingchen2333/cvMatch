@@ -3,7 +3,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Home from "./component/home/Home";
 import Login from "./component/auth/Login";
 import { RootLayout } from "./component/layout/RootLayout";
-
+import ProtectedRoute from "./component/auth/ProtectedRoute";
 import { Toaster } from "react-hot-toast";
 import Applications from "./component/application/Applications";
 import AddApplication from "./component/application/AddApplication";
@@ -12,7 +12,13 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<RootLayout />}>
+        <Route
+          element={
+            <ProtectedRoute>
+              <RootLayout />
+            </ProtectedRoute>
+          }
+        >
           <Route path="/" element={<Home />} />
 
           <Route path="/add-application" element={<AddApplication />} />
