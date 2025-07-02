@@ -4,6 +4,7 @@ import {
   deleteApplication,
   getApplicationsByUserId,
   setApplications,
+  setPageNumer,
   updateApplicationById,
 } from "../../store/features/applicationSlice";
 import {
@@ -15,13 +16,14 @@ import {
   TableHead,
   TableHeadCell,
   TableRow,
+  Pagination,
 } from "flowbite-react";
 import { FaTimes } from "react-icons/fa";
 import toast from "react-hot-toast";
 import TableEditCell from "../common/table/TableEditCell";
 import TableTextButton from "../common/table/TableTextButton";
-import Button from "../common/Button";
 import { HiOutlineLink } from "react-icons/hi";
+import Paginator from "../common/Paginator";
 
 const Applications = () => {
   const dispatch = useDispatch();
@@ -42,8 +44,8 @@ const Applications = () => {
   const [deleteId, setDeleteId] = useState(null);
 
   useEffect(() => {
-    dispatch(getApplicationsByUserId(userId));
-  }, [dispatch, userId]);
+    dispatch(getApplicationsByUserId({ userId, pageNumber }));
+  }, [dispatch, userId, pageNumber]);
 
   const handleEditClick = (index) => {
     setEditingIndex(index);
@@ -100,117 +102,136 @@ const Applications = () => {
     setEditValues({});
   };
 
+  const onPageChange = (page) => {
+    console.log("page:", page);
+    dispatch(setPageNumer(page - 1));
+  };
+
   return (
     <div className="flex flex-col gap-y-5">
       <h1 className="ms-5 text-xl font-medium">All Applications</h1>
 
       <div className="overflow-x-auto">
         {applications?.length > 0 ? (
-          <Table hoverable>
-            <TableHead>
-              <TableRow>
-                <TableHeadCell className="w-[10%]">Company</TableHeadCell>
-                <TableHeadCell className="w-[10%]">Title</TableHeadCell>
-                <TableHeadCell className="w-[15%]">Date Applied</TableHeadCell>
-                <TableHeadCell className="w-[15%]">Status</TableHeadCell>
-                <TableHeadCell className="w-[30%]">url</TableHeadCell>
-                <TableHeadCell className="w-[10%]">
-                  <span className="sr-only">Edit</span>
-                </TableHeadCell>
-              </TableRow>
-            </TableHead>
-            <TableBody className="divide-y">
-              {applications.map((application, index) => (
-                <TableRow
-                  key={index}
-                  className="relative border-slate-300 bg-white"
-                >
-                  {editingIndex === index ? (
-                    // edit the row
-                    <>
-                      <TableEditCell
-                        name="companyName"
-                        value={editValues.companyName}
-                        onChange={handleInputChange}
-                      />
-                      <TableEditCell
-                        name="jobTitle"
-                        value={editValues.jobTitle}
-                        onChange={handleInputChange}
-                      />
-
-                      <TableEditCell
-                        name="dateApplied"
-                        value={editValues.dateApplied}
-                        onChange={handleInputChange}
-                      />
-
-                      <TableEditCell
-                        name="status"
-                        value={editValues.status}
-                        onChange={handleInputChange}
-                      />
-
-                      <TableEditCell
-                        name="jobUrl"
-                        value={editValues.jobUrl}
-                        onChange={handleInputChange}
-                      />
-
-                      <TableCell className="bg-white px-6 py-4">
-                        <TableTextButton
-                          onClick={() => handleSave(application.id, index)}
-                          className="text-green-700 hover:text-green-500"
-                        >
-                          Save
-                        </TableTextButton>
-
-                        <TableTextButton
-                          onClick={handleCancel}
-                          className="absolute top-2 right-2 text-lg text-red-700 hover:text-red-500"
-                        >
-                          <FaTimes />
-                        </TableTextButton>
-                      </TableCell>
-                    </>
-                  ) : (
-                    // display the row
-                    <>
-                      <TableCell className="font-medium whitespace-nowrap text-gray-900 dark:text-white">
-                        {application.companyName}
-                      </TableCell>
-                      <TableCell>{application.jobTitle}</TableCell>
-                      <TableCell>{application.dateApplied}</TableCell>
-                      <TableCell>{application.status}</TableCell>
-                      <TableCell>
-                        <a href={`${application.jobUrl}`} target="_blank">
-                          <HiOutlineLink />
-                        </a>
-                      </TableCell>
-                      <TableCell className=" ">
-                        <Dropdown
-                          label={<span className="text-2xl"></span>}
-                          inline
-                        >
-                          <DropdownItem onClick={() => handleEditClick(index)}>
-                            Edit
-                          </DropdownItem>
-                          <DropdownItem
-                            onClick={() => {
-                              setDeleteIndex(index);
-                              setDeleteId(application.id);
-                            }}
-                          >
-                            Delete
-                          </DropdownItem>
-                        </Dropdown>
-                      </TableCell>
-                    </>
-                  )}
+          <>
+            <Table hoverable>
+              <TableHead>
+                <TableRow>
+                  <TableHeadCell className="w-[10%]">Company</TableHeadCell>
+                  <TableHeadCell className="w-[10%]">Title</TableHeadCell>
+                  <TableHeadCell className="w-[15%]">
+                    Date Applied
+                  </TableHeadCell>
+                  <TableHeadCell className="w-[15%]">Status</TableHeadCell>
+                  <TableHeadCell className="w-[30%]">url</TableHeadCell>
+                  <TableHeadCell className="w-[10%]">
+                    <span className="sr-only">Edit</span>
+                  </TableHeadCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHead>
+              <TableBody className="divide-y">
+                {applications.map((application, index) => (
+                  <TableRow
+                    key={index}
+                    className="relative border-slate-300 bg-white"
+                  >
+                    {editingIndex === index ? (
+                      // edit the row
+                      <>
+                        <TableEditCell
+                          name="companyName"
+                          value={editValues.companyName}
+                          onChange={handleInputChange}
+                        />
+                        <TableEditCell
+                          name="jobTitle"
+                          value={editValues.jobTitle}
+                          onChange={handleInputChange}
+                        />
+
+                        <TableEditCell
+                          name="dateApplied"
+                          value={editValues.dateApplied}
+                          onChange={handleInputChange}
+                        />
+
+                        <TableEditCell
+                          name="status"
+                          value={editValues.status}
+                          onChange={handleInputChange}
+                        />
+
+                        <TableEditCell
+                          name="jobUrl"
+                          value={editValues.jobUrl}
+                          onChange={handleInputChange}
+                        />
+
+                        <TableCell className="bg-white px-6 py-4">
+                          <TableTextButton
+                            onClick={() => handleSave(application.id, index)}
+                            className="text-green-700 hover:text-green-500"
+                          >
+                            Save
+                          </TableTextButton>
+
+                          <TableTextButton
+                            onClick={handleCancel}
+                            className="absolute top-2 right-2 text-lg text-red-700 hover:text-red-500"
+                          >
+                            <FaTimes />
+                          </TableTextButton>
+                        </TableCell>
+                      </>
+                    ) : (
+                      // display the row
+                      <>
+                        <TableCell className="font-medium whitespace-nowrap text-gray-900 dark:text-white">
+                          {application.companyName}
+                        </TableCell>
+                        <TableCell>{application.jobTitle}</TableCell>
+                        <TableCell>{application.dateApplied}</TableCell>
+                        <TableCell>{application.status}</TableCell>
+                        <TableCell>
+                          <a href={`${application.jobUrl}`} target="_blank">
+                            <HiOutlineLink />
+                          </a>
+                        </TableCell>
+                        <TableCell className=" ">
+                          <Dropdown
+                            label={<span className="text-2xl"></span>}
+                            inline
+                          >
+                            <DropdownItem
+                              onClick={() => handleEditClick(index)}
+                            >
+                              Edit
+                            </DropdownItem>
+                            <DropdownItem
+                              onClick={() => {
+                                setDeleteIndex(index);
+                                setDeleteId(application.id);
+                              }}
+                            >
+                              Delete
+                            </DropdownItem>
+                          </Dropdown>
+                        </TableCell>
+                      </>
+                    )}
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+            <div className="mt-10 flex overflow-x-auto sm:justify-center">
+              <Pagination
+                currentPage={pageNumber + 1}
+                totalPages={totalPages}
+                onPageChange={onPageChange}
+                showIcons
+              />
+            </div>
+          </>
         ) : (
           <>
             <h3 className="mt-2 text-sm font-medium text-blue-700">

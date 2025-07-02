@@ -3,8 +3,10 @@ import { authApi } from "../../service/api";
 
 export const getApplicationsByUserId = createAsyncThunk(
   "app/getApplicationsByUserId",
-  async (userId) => {
-    const response = await authApi.get(`/users/${userId}/applications`);
+  async ({ userId, pageNumber = 0 }) => {
+    const response = await authApi.get(
+      `/users/${userId}/applications?pageNumber=${pageNumber} `,
+    );
     return response.data;
   },
 );
@@ -58,6 +60,9 @@ const applicationSlice = createSlice({
     setApplications: (state, action) => {
       state.applications = action.payload;
     },
+    setPageNumer: (state, action) => {
+      state.pageNumber = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(getApplicationsByUserId.fulfilled, (state, action) => {
@@ -71,6 +76,6 @@ const applicationSlice = createSlice({
   },
 });
 
-export const { setApplications } = applicationSlice.actions;
+export const { setApplications, setPageNumer } = applicationSlice.actions;
 
 export default applicationSlice.reducer;
