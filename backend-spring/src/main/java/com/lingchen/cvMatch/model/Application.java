@@ -1,6 +1,7 @@
 package com.lingchen.cvMatch.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,7 +24,14 @@ public class Application {
     private String companyName;
     private String jobTitle;
     private LocalDate dateApplied;
-    private String status;
+//    private String status;
+
+    @Size(max = 500)
+    private String notes;
+
+    @ManyToOne
+    @JoinColumn(name = "status_id")
+    private Status status;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

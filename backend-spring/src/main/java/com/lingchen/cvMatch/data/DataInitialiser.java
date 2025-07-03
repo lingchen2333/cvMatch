@@ -19,6 +19,7 @@ public class DataInitialiser implements ApplicationListener<ApplicationReadyEven
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
+        //add default user
         if (userRepository.existsUserByEmail("test@gmail.com")) {
             return;
         }
@@ -28,5 +29,6 @@ public class DataInitialiser implements ApplicationListener<ApplicationReadyEven
         user.setLastName("Smith");
         user.setFirstName("John");
         userRepository.save(user);
+
     }
 }

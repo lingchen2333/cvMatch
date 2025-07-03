@@ -12,8 +12,9 @@ const AddApplication = () => {
     companyName: "",
     jobTitle: "",
     dateApplied: today,
-    status: "",
+    statusName: "",
     jobUrl: "",
+    notes: "",
   });
 
   const handleInputChange = (e) => {
@@ -40,58 +41,72 @@ const AddApplication = () => {
       <h1 className="ms-5 text-xl font-medium">Add Application</h1>
 
       <form
-        className="space-y-6 rounded-2xl p-4 md:w-2xl"
+        className="space-y-6 rounded-2xl p-4 md:w-3xl"
         onSubmit={handleSubmit}
       >
-        <FormRow
-          name="companyName"
-          labelText="Company Name"
-          type="text"
-          placeholder="Enter company name"
-          value={application.companyName}
-          required={true}
-          handleChange={handleInputChange}
-        />
+        <div className="grid grid-cols-1 gap-y-8 md:grid-cols-2 md:gap-x-28">
+          <FormRow
+            name="companyName"
+            labelText="Company Name"
+            type="text"
+            placeholder="Enter company name"
+            value={application.companyName}
+            required={true}
+            handleChange={handleInputChange}
+          />
 
-        <FormRow
-          name="jobTitle"
-          labelText="Job Title"
-          type="text"
-          placeholder="Enter job title"
-          value={application.jobTitle}
-          required={true}
-          handleChange={handleInputChange}
-        />
+          <FormRow
+            name="jobTitle"
+            labelText="Job Title"
+            type="text"
+            placeholder="Enter job title"
+            value={application.jobTitle}
+            required={true}
+            handleChange={handleInputChange}
+          />
 
-        <FormRow
-          name="dateApplied"
-          labelText="Date Applied"
-          type="date"
-          placeholder="Enter a date"
-          value={application.dateApplied}
-          required={true}
-          handleChange={handleInputChange}
-        />
+          <FormRow
+            name="dateApplied"
+            labelText="Date Applied"
+            type="date"
+            placeholder="Enter a date"
+            value={application.dateApplied}
+            required={true}
+            handleChange={handleInputChange}
+          />
 
-        <FormRow
-          name="status"
-          labelText="status"
-          type="string"
-          placeholder="Enter application status"
-          value={application.status}
-          required={true}
-          handleChange={handleInputChange}
-        />
+          <FormRow
+            name="statusName"
+            labelText="status"
+            type="string"
+            placeholder="Enter application status"
+            value={application.statusName}
+            required={true}
+            handleChange={handleInputChange}
+          />
 
-        <FormRow
-          name="jobUrl"
-          labelText="job URL"
-          type="string"
-          placeholder="Enter job url"
-          value={application.jobUrl}
-          required={true}
-          handleChange={handleInputChange}
-        />
+          <FormRow
+            name="jobUrl"
+            labelText="job URL"
+            type="string"
+            placeholder="Enter job url"
+            value={application.jobUrl}
+            required={true}
+            handleChange={handleInputChange}
+          />
+        </div>
+
+        <div className="md:col-span-2">
+          <FormRow
+            name="notes"
+            labelText="notes"
+            type="string"
+            placeholder="Enter notes"
+            value={application.notes}
+            required={false}
+            handleChange={handleInputChange}
+          />
+        </div>
 
         <Button className="ms-auto mt-10 flex w-3xs" type="submit" style="blue">
           + Add Application

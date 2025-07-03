@@ -13,5 +13,7 @@ public class ApplicationDto {
     private String companyName;
     private String jobTitle;
     private LocalDate dateApplied;
-    private String status;
+    private String notes;
+
+    private StatusDto status;
 }

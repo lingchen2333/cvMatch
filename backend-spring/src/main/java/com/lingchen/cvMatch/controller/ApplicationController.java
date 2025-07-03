@@ -25,11 +25,19 @@ public class ApplicationController {
             @RequestParam(name = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNumber,
             @RequestParam(name = "pageSize", defaultValue = AppConstants.PAGE_SIZE, required = false) Integer pageSize,
             @RequestParam(name = "sortBy", defaultValue = AppConstants.SORT_APPLICATIONS_BY, required = false) String sortBy,
-            @RequestParam(name = "sortOrder", defaultValue = AppConstants.SORT_DIR) String sortOrder
+            @RequestParam(name = "sortOrder", defaultValue = AppConstants.SORT_DIR, required = false) String sortOrder,
+
+            @RequestParam(name = "status", required = false) String statusName
     ) {
-        ApplicationResponse applicationResponse = applicationService.getApplicationsByUser(pageNumber, pageSize, sortBy, sortOrder);
+        ApplicationResponse applicationResponse;
+        if (statusName != null) {
+            applicationResponse = applicationService.getUserApplicationsByStatus(pageNumber, pageSize, sortBy, sortOrder, statusName);
+        } else {
+            applicationResponse = applicationService.getUserApplications(pageNumber, pageSize, sortBy, sortOrder);
+        }
         return ResponseEntity.ok(new ApiResponse("Get user applications successfully", applicationResponse));
     }
+
 
     @PostMapping("/applications")
     public ResponseEntity<ApiResponse> addApplication(@RequestBody AddApplicationRequest request) {

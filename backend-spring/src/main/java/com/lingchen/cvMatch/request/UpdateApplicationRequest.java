@@ -13,6 +13,7 @@ public class UpdateApplicationRequest {
     private String companyName;
     private String jobTitle;
     private LocalDate dateApplied;
-    private String status;
+    private String statusName;
+    private String notes;
 }
 

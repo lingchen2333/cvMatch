@@ -2,21 +2,21 @@ package com.lingchen.cvMatch.exception;
 
 public class ResourceNotFoundException extends RuntimeException {
     String resourceName;
-    String field;
     String fieldName;
+    String fieldValue;
     Long fieldId;
 
-    public ResourceNotFoundException(String resourceName, String field, String fieldName) {
-        super(String.format("%s not found with %s: %s", resourceName, field, fieldName));
+    public ResourceNotFoundException(String resourceName, String fieldName, String fieldValue) {
+        super(String.format("%s not found with %s: %s", resourceName, fieldName, fieldValue));
         this.resourceName = resourceName;
-        this.field = field;
         this.fieldName = fieldName;
+        this.fieldValue = fieldValue;
     }
 
-    public ResourceNotFoundException(String resourceName, String field, Long fieldId) {
-        super(String.format("%s not found with %s: %d", resourceName, field, fieldId));
+    public ResourceNotFoundException(String resourceName, String fieldName, Long fieldId) {
+        super(String.format("%s not found with %s: %d", resourceName, fieldName, fieldId));
         this.resourceName = resourceName;
-        this.field = field;
+        this.fieldName = fieldName;
         this.fieldId = fieldId;
     }
 }

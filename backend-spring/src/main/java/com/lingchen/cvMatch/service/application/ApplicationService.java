@@ -3,8 +3,10 @@ package com.lingchen.cvMatch.service.application;
 import com.lingchen.cvMatch.dto.ApplicationDto;
 import com.lingchen.cvMatch.exception.ResourceNotFoundException;
 import com.lingchen.cvMatch.model.Application;
+import com.lingchen.cvMatch.model.Status;
 import com.lingchen.cvMatch.model.User;
 import com.lingchen.cvMatch.repository.ApplicationRepository;
+import com.lingchen.cvMatch.repository.StatusRepository;
 import com.lingchen.cvMatch.repository.UserRepository;
 import com.lingchen.cvMatch.request.AddApplicationRequest;
 import com.lingchen.cvMatch.request.UpdateApplicationRequest;
@@ -28,10 +30,11 @@ public class ApplicationService implements IApplicationService {
     private final ApplicationRepository applicationRepository;
     private final IUserService userService;
     private final UserRepository userRepository;
+    private final StatusRepository statusRepository;
     private final ModelMapper modelMapper;
 
     @Override
-    public ApplicationResponse getApplicationsByUser(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
+    public ApplicationResponse getUserApplications(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
         User user = userService.getAuthenticatedUser();
 
         Sort sortByAndOrder = sortOrder.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
@@ -52,9 +55,32 @@ public class ApplicationService implements IApplicationService {
         return applicationResponse;
     }
 
+
+    @Override
+    public ApplicationResponse getUserApplicationsByStatus(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder, String statusName) {
+        User user = userService.getAuthenticatedUser();
+
+        Sort sortByAndOrder = sortOrder.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        Pageable pageDetails = PageRequest.of(pageNumber, pageSize, sortByAndOrder);
+        Page<Application> applicationPage = applicationRepository.findAllByUserAndStatusName(user, statusName, pageDetails);
+
+        List<Application> applications = applicationPage.getContent();
+        List<ApplicationDto> applicationDtos = applications.stream().map(this::convertToDto).toList();
+
+        ApplicationResponse applicationResponse = new ApplicationResponse();
+        applicationResponse.setContent(applicationDtos);
+        applicationResponse.setPageNumber(applicationPage.getNumber());
+        applicationResponse.setPageSize(applicationPage.getSize());
+        applicationResponse.setTotalElements(applicationPage.getTotalElements());
+        applicationResponse.setTotalPages(applicationPage.getTotalPages());
+        applicationResponse.setLastPage(applicationPage.isLast());
+
+        return applicationResponse;
+    }
+
     @Override
     public Application getApplicationById(long id) {
-        return applicationRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Application", "id", id));
+        return applicationRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Application", "id", id));
     }
 
     @Override
@@ -63,11 +89,15 @@ public class ApplicationService implements IApplicationService {
         Application application = new Application();
         application.setUser(user);
 
-        application.setStatus(request.getStatus());
         application.setCompanyName(request.getCompanyName());
         application.setDateApplied(request.getDateApplied());
         application.setJobUrl(request.getJobUrl());
         application.setJobTitle(request.getJobTitle());
+        application.setNotes(request.getNotes());
+
+        Status status = statusRepository.getStatusByName(request.getStatusName())
+                .orElseGet(() -> statusRepository.save(new Status(request.getStatusName())));
+        application.setStatus(status);
 
         return applicationRepository.save(application);
     }
@@ -79,11 +109,15 @@ public class ApplicationService implements IApplicationService {
         User user = userService.getAuthenticatedUser();
         user.getApplications().stream().filter(app -> app.getId().equals(id)).findAny().orElseThrow(() -> new ResourceNotFoundException("Application", "id", id));
 
-        application.setStatus(request.getStatus());
         application.setCompanyName(request.getCompanyName());
         application.setDateApplied(request.getDateApplied());
         application.setJobUrl(request.getJobUrl());
         application.setJobTitle(request.getJobTitle());
+        application.setNotes(request.getNotes());
+
+        Status status = statusRepository.getStatusByName(request.getStatusName())
+                .orElseGet(() -> statusRepository.save(new Status(request.getStatusName())));
+        application.setStatus(status);
 
         Application updatedApplication = applicationRepository.save(application);
 
@@ -102,8 +136,15 @@ public class ApplicationService implements IApplicationService {
         user.getApplications().removeIf(app -> app.getId().equals(id));
         userRepository.save(user);
 
+        Status status = application.getStatus();
+
         applicationRepository.delete(application);
+
+        if (applicationRepository.getApplicationsByStatus(status).isEmpty()) {
+            statusRepository.delete(status);
+        }
     }
+
 
     @Override
     public ApplicationDto convertToDto(Application application) {

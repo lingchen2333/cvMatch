@@ -1,12 +1,13 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { authApi } from "../../service/api";
 
-export const getApplicationsByUserId = createAsyncThunk(
-  "app/getApplicationsByUserId",
+export const getUserApplications = createAsyncThunk(
+  "app/getUserApplications",
   async ({ userId, pageNumber = 0 }) => {
     const response = await authApi.get(
       `/users/${userId}/applications?pageNumber=${pageNumber} `,
     );
+    console.log("get user applications:", response.data);
     return response.data;
   },
 );
@@ -19,7 +20,7 @@ export const updateApplicationById = createAsyncThunk(
       companyName: application.companyName,
       jobTitle: application.jobTitle,
       dateApplied: application.dateApplied,
-      status: application.status,
+      statusName: application.status,
     });
     console.log("update applications by id:", response.data);
     return response.data;
@@ -65,7 +66,7 @@ const applicationSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(getApplicationsByUserId.fulfilled, (state, action) => {
+    builder.addCase(getUserApplications.fulfilled, (state, action) => {
       state.applications = action.payload.data.content;
       state.pageNumber = action.payload.data.pageNumber;
       state.pageSize = action.payload.data.pageSize;

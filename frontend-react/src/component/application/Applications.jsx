@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   deleteApplication,
-  getApplicationsByUserId,
+  getUserApplications,
   setApplications,
   setPageNumer,
   updateApplicationById,
@@ -23,7 +23,6 @@ import toast from "react-hot-toast";
 import TableEditCell from "../common/table/TableEditCell";
 import TableTextButton from "../common/table/TableTextButton";
 import { HiOutlineLink } from "react-icons/hi";
-import Paginator from "../common/Paginator";
 
 const Applications = () => {
   const dispatch = useDispatch();
@@ -44,7 +43,7 @@ const Applications = () => {
   const [deleteId, setDeleteId] = useState(null);
 
   useEffect(() => {
-    dispatch(getApplicationsByUserId({ userId, pageNumber }));
+    dispatch(getUserApplications({ userId, pageNumber }));
   }, [dispatch, userId, pageNumber]);
 
   const handleEditClick = (index) => {
@@ -118,13 +117,14 @@ const Applications = () => {
               <TableHead>
                 <TableRow>
                   <TableHeadCell className="w-[10%]">Company</TableHeadCell>
-                  <TableHeadCell className="w-[10%]">Title</TableHeadCell>
+                  <TableHeadCell className="w-[15%]">Title</TableHeadCell>
                   <TableHeadCell className="w-[15%]">
                     Date Applied
                   </TableHeadCell>
                   <TableHeadCell className="w-[15%]">Status</TableHeadCell>
-                  <TableHeadCell className="w-[30%]">url</TableHeadCell>
-                  <TableHeadCell className="w-[10%]">
+                  <TableHeadCell className="w-[10%]">url</TableHeadCell>
+                  <TableHeadCell className="w-[10%]">notes</TableHeadCell>
+                  <TableHeadCell className="w-[5%]">
                     <span className="sr-only">Edit</span>
                   </TableHeadCell>
                 </TableRow>
@@ -162,6 +162,12 @@ const Applications = () => {
                         />
 
                         <TableEditCell
+                          name="notes"
+                          value={editValues.notes}
+                          onChange={handleInputChange}
+                        />
+
+                        <TableEditCell
                           name="jobUrl"
                           value={editValues.jobUrl}
                           onChange={handleInputChange}
@@ -191,12 +197,13 @@ const Applications = () => {
                         </TableCell>
                         <TableCell>{application.jobTitle}</TableCell>
                         <TableCell>{application.dateApplied}</TableCell>
-                        <TableCell>{application.status}</TableCell>
+                        <TableCell>{application.status.name}</TableCell>
                         <TableCell>
                           <a href={`${application.jobUrl}`} target="_blank">
                             <HiOutlineLink />
                           </a>
                         </TableCell>
+                        <TableCell>{application.notes}</TableCell>
                         <TableCell className=" ">
                           <Dropdown
                             label={<span className="text-2xl"></span>}

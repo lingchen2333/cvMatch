@@ -22,7 +22,7 @@ const FormRow = ({
         placeholder={placeholder}
         value={value}
         onChange={handleChange}
-        className={`block w-full rounded-md border border-gray-300 bg-white py-2 pr-3 pl-2 focus:border-blue-500 focus:outline-none sm:text-sm ${className} `}
+        className={`block w-full rounded-md border border-gray-300 bg-white py-3 pr-3 pl-2 focus:border-blue-500 focus:outline-none md:py-4 ${className} `}
         required={required}
       />
     </div>
