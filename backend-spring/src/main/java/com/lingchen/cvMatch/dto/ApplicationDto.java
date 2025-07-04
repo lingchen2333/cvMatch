@@ -15,5 +15,5 @@ public class ApplicationDto {
     private LocalDate dateApplied;
     private String notes;
 
-    private StatusDto status;
+    private String statusName;
 }

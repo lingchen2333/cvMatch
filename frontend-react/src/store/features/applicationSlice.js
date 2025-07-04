@@ -20,7 +20,7 @@ export const updateApplicationById = createAsyncThunk(
       companyName: application.companyName,
       jobTitle: application.jobTitle,
       dateApplied: application.dateApplied,
-      statusName: application.status,
+      statusName: application.statusName,
     });
     console.log("update applications by id:", response.data);
     return response.data;

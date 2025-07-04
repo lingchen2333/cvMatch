@@ -96,7 +96,7 @@ public class ApplicationService implements IApplicationService {
         application.setNotes(request.getNotes());
 
         Status status = statusRepository.getStatusByName(request.getStatusName())
-                .orElseGet(() -> statusRepository.save(new Status(request.getStatusName())));
+                .orElseThrow(() -> new ResourceNotFoundException("Status", "name", request.getStatusName()));
         application.setStatus(status);
 
         return applicationRepository.save(application);
@@ -116,7 +116,7 @@ public class ApplicationService implements IApplicationService {
         application.setNotes(request.getNotes());
 
         Status status = statusRepository.getStatusByName(request.getStatusName())
-                .orElseGet(() -> statusRepository.save(new Status(request.getStatusName())));
+                .orElseThrow(() -> new ResourceNotFoundException("Status", "name", request.getStatusName()));
         application.setStatus(status);
 
         Application updatedApplication = applicationRepository.save(application);

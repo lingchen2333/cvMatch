@@ -26,6 +26,11 @@ public class StatusService implements IStatusService {
     }
 
     @Override
+    public List<Status> getAllStatuses() {
+        return statusRepository.findAll();
+    }
+
+    @Override
     public StatusDto convertToDto(Status status) {
         return modelMapper.map(status, StatusDto.class);
     }

@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { addApplication } from "../../store/features/applicationSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import FormRow from "../common/form/FormRow";
 import Button from "../common/Button";
 import toast from "react-hot-toast";
+import { getAllStatuses } from "../../store/features/statusSlice";
 
 const AddApplication = () => {
   const dispatch = useDispatch();
@@ -12,10 +13,16 @@ const AddApplication = () => {
     companyName: "",
     jobTitle: "",
     dateApplied: today,
-    statusName: "",
+    statusName: "applied",
     jobUrl: "",
     notes: "",
   });
+
+  const statuses = useSelector((state) => state.status.statuses);
+
+  useEffect(() => {
+    dispatch(getAllStatuses());
+  }, [dispatch]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -28,6 +35,7 @@ const AddApplication = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const promise = dispatch(addApplication(application));
+    console.log("adding application", application);
 
     toast.promise(promise, {
       loading: "Saving application",
@@ -75,16 +83,31 @@ const AddApplication = () => {
             handleChange={handleInputChange}
           />
 
-          <FormRow
-            name="statusName"
-            labelText="status"
-            type="string"
-            placeholder="Enter application status"
-            value={application.statusName}
-            required={true}
-            handleChange={handleInputChange}
-          />
+          <div className="flex w-full flex-col space-y-2">
+            <label htmlFor="statusName" className="text-gray-500 capitalize">
+              status
+            </label>
+            <select
+              name="statusName"
+              id="statusName"
+              value={application.statusName}
+              onChange={handleInputChange}
+              className="block w-full rounded-md border border-gray-300 bg-white py-3 pr-3 pl-2 focus:border-blue-500 focus:outline-none md:py-4"
+            >
+              {statuses?.length > 0 ? (
+                statuses.map((status, index) => (
+                  <option value={status} key={index}>
+                    {status}
+                  </option>
+                ))
+              ) : (
+                <></>
+              )}
+            </select>
+          </div>
+        </div>
 
+        <div className="grid gap-y-8 md:col-span-2">
           <FormRow
             name="jobUrl"
             labelText="job URL"
@@ -94,9 +117,6 @@ const AddApplication = () => {
             required={true}
             handleChange={handleInputChange}
           />
-        </div>
-
-        <div className="md:col-span-2">
           <FormRow
             name="notes"
             labelText="notes"

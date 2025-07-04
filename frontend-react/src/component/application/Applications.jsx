@@ -17,12 +17,15 @@ import {
   TableHeadCell,
   TableRow,
   Pagination,
+  Badge,
 } from "flowbite-react";
 import { FaTimes } from "react-icons/fa";
 import toast from "react-hot-toast";
 import TableEditCell from "../common/table/TableEditCell";
 import TableTextButton from "../common/table/TableTextButton";
 import { HiOutlineLink } from "react-icons/hi";
+import StatusTag from "../common/StatusTag";
+import { getAllStatuses } from "../../store/features/statusSlice";
 
 const Applications = () => {
   const dispatch = useDispatch();
@@ -36,6 +39,7 @@ const Applications = () => {
     totalPages,
     lastPage,
   } = useSelector((state) => state.application);
+  const statuses = useSelector((state) => state.status.statuses);
 
   const [editingIndex, setEditingIndex] = useState(null);
   const [editValues, setEditValues] = useState({});
@@ -44,6 +48,7 @@ const Applications = () => {
 
   useEffect(() => {
     dispatch(getUserApplications({ userId, pageNumber }));
+    dispatch(getAllStatuses());
   }, [dispatch, userId, pageNumber]);
 
   const handleEditClick = (index) => {
@@ -121,8 +126,8 @@ const Applications = () => {
                   <TableHeadCell className="w-[15%]">
                     Date Applied
                   </TableHeadCell>
-                  <TableHeadCell className="w-[15%]">Status</TableHeadCell>
-                  <TableHeadCell className="w-[10%]">url</TableHeadCell>
+                  <TableHeadCell className="w-[10%]">Status</TableHeadCell>
+                  <TableHeadCell className="w-[15%]">url</TableHeadCell>
                   <TableHeadCell className="w-[10%]">notes</TableHeadCell>
                   <TableHeadCell className="w-[5%]">
                     <span className="sr-only">Edit</span>
@@ -140,36 +145,61 @@ const Applications = () => {
                       <>
                         <TableEditCell
                           name="companyName"
+                          type="text"
                           value={editValues.companyName}
                           onChange={handleInputChange}
                         />
                         <TableEditCell
                           name="jobTitle"
+                          type="text"
                           value={editValues.jobTitle}
                           onChange={handleInputChange}
                         />
 
                         <TableEditCell
                           name="dateApplied"
+                          type="date"
                           value={editValues.dateApplied}
                           onChange={handleInputChange}
                         />
 
+                        {/* <TableEditCell
+                          name="statusName"
+                          type="text"
+                          value={editValues.statusName}
+                          onChange={handleInputChange}
+                        /> */}
+                        <TableCell className="bg-white px-6 py-4">
+                          <select
+                            name="statusName"
+                            id="statusName"
+                            value={editValues.statusName}
+                            onChange={handleInputChange}
+                            className="min-h-[2rem] w-full resize-none rounded-md border border-slate-200 bg-gray-100 p-1 focus:border-blue-500 focus:outline-none"
+                          >
+                            {statuses?.length > 0 ? (
+                              statuses.map((status, index) => (
+                                <option value={status} key={index}>
+                                  {status}
+                                </option>
+                              ))
+                            ) : (
+                              <></>
+                            )}
+                          </select>
+                        </TableCell>
+
                         <TableEditCell
-                          name="status"
-                          value={editValues.status}
+                          name="jobUrl"
+                          type="textArea"
+                          value={editValues.jobUrl}
                           onChange={handleInputChange}
                         />
 
                         <TableEditCell
                           name="notes"
+                          type="textArea"
                           value={editValues.notes}
-                          onChange={handleInputChange}
-                        />
-
-                        <TableEditCell
-                          name="jobUrl"
-                          value={editValues.jobUrl}
                           onChange={handleInputChange}
                         />
 
@@ -197,7 +227,9 @@ const Applications = () => {
                         </TableCell>
                         <TableCell>{application.jobTitle}</TableCell>
                         <TableCell>{application.dateApplied}</TableCell>
-                        <TableCell>{application.status.name}</TableCell>
+                        <TableCell>
+                          <StatusTag>{application.statusName}</StatusTag>
+                        </TableCell>
                         <TableCell>
                           <a href={`${application.jobUrl}`} target="_blank">
                             <HiOutlineLink />

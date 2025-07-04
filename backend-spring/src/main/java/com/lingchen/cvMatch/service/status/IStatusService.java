@@ -9,6 +9,7 @@ import java.util.List;
 
 public interface IStatusService {
     Status getStatusByName(String name);
+    List<Status> getAllStatuses();
 
     StatusDto convertToDto(Status status);
 }
