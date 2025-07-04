@@ -15,13 +15,7 @@ export const getUserApplications = createAsyncThunk(
 export const updateApplicationById = createAsyncThunk(
   "app/updateApplicationById",
   async ({ id, application }) => {
-    const response = await authApi.put(`/applications/${id}`, {
-      jobUrl: application.jobUrl,
-      companyName: application.companyName,
-      jobTitle: application.jobTitle,
-      dateApplied: application.dateApplied,
-      statusName: application.statusName,
-    });
+    const response = await authApi.put(`/applications/${id}`, application);
     console.log("update applications by id:", response.data);
     return response.data;
   },

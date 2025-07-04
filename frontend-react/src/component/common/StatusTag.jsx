@@ -2,23 +2,28 @@ import { Badge } from "flowbite-react";
 import React from "react";
 
 const StatusTag = ({ children }) => {
+  var color;
   if (children == "applied") {
-    return <Badge color="info">{children}</Badge>;
+    color = "info";
   }
 
   if (children == "interviewing") {
-    return <Badge color="warning">{children}</Badge>;
+    color = "warning";
   }
 
   if (children == "offer") {
-    return <Badge color="success">{children}</Badge>;
+    color = "success";
   }
 
   if (children == "rejected") {
-    return <Badge color="gray">{children}</Badge>;
+    color = "gray";
   }
 
-  return <Badge color="indigo">{children}</Badge>;
+  return (
+    <Badge color={`${color}`} className="rounded-xl">
+      {children}
+    </Badge>
+  );
 };
 
 export default StatusTag;

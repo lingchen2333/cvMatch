@@ -8,24 +8,18 @@ import {
   updateApplicationById,
 } from "../../store/features/applicationSlice";
 import {
-  Dropdown,
-  DropdownItem,
   Table,
   TableBody,
-  TableCell,
   TableHead,
   TableHeadCell,
   TableRow,
   Pagination,
-  Badge,
 } from "flowbite-react";
-import { FaTimes } from "react-icons/fa";
 import toast from "react-hot-toast";
-import TableEditCell from "../common/table/TableEditCell";
-import TableTextButton from "../common/table/TableTextButton";
-import { HiOutlineLink } from "react-icons/hi";
-import StatusTag from "../common/StatusTag";
 import { getAllStatuses } from "../../store/features/statusSlice";
+import DisplayTableRow from "../common/table/DisplayTableRow";
+import EditTableRow from "../common/table/EditTableRow";
+import DeleteApplicationModal from "../common/DeleteApplicationModal";
 
 const Applications = () => {
   const dispatch = useDispatch();
@@ -45,6 +39,7 @@ const Applications = () => {
   const [editValues, setEditValues] = useState({});
   const [deleteIndex, setDeleteIndex] = useState(null);
   const [deleteId, setDeleteId] = useState(null);
+  const [openModal, setOpenModal] = useState(false);
 
   useEffect(() => {
     dispatch(getUserApplications({ userId, pageNumber }));
@@ -54,6 +49,12 @@ const Applications = () => {
   const handleEditClick = (index) => {
     setEditingIndex(index);
     setEditValues(applications[index]);
+  };
+
+  const handleDeleteClick = (index, applicationId) => {
+    setDeleteIndex(index);
+    setDeleteId(applicationId);
+    setOpenModal(true);
   };
 
   const handleDelete = async (applicationId, index) => {
@@ -70,6 +71,18 @@ const Applications = () => {
       toast.error("Application can't be deleted");
       dispatch(setApplications(previousApplications));
     }
+
+    setOpenModal(false);
+  };
+
+  const handleCancelDelete = () => {
+    setOpenModal(false);
+    setDeleteIndex(null);
+    setDeleteId(null);
+  };
+
+  const handleCloseModal = () => {
+    setOpenModal(false);
   };
 
   const handleInputChange = (e) => {
@@ -101,7 +114,7 @@ const Applications = () => {
     setEditingIndex(null);
   };
 
-  const handleCancel = () => {
+  const handleCancelEdit = () => {
     setEditingIndex(null);
     setEditValues({});
   };
@@ -142,121 +155,23 @@ const Applications = () => {
                   >
                     {editingIndex === index ? (
                       // edit the row
-                      <>
-                        <TableEditCell
-                          name="companyName"
-                          type="text"
-                          value={editValues.companyName}
-                          onChange={handleInputChange}
-                        />
-                        <TableEditCell
-                          name="jobTitle"
-                          type="text"
-                          value={editValues.jobTitle}
-                          onChange={handleInputChange}
-                        />
-
-                        <TableEditCell
-                          name="dateApplied"
-                          type="date"
-                          value={editValues.dateApplied}
-                          onChange={handleInputChange}
-                        />
-
-                        {/* <TableEditCell
-                          name="statusName"
-                          type="text"
-                          value={editValues.statusName}
-                          onChange={handleInputChange}
-                        /> */}
-                        <TableCell className="bg-white px-6 py-4">
-                          <select
-                            name="statusName"
-                            id="statusName"
-                            value={editValues.statusName}
-                            onChange={handleInputChange}
-                            className="min-h-[2rem] w-full resize-none rounded-md border border-slate-200 bg-gray-100 p-1 focus:border-blue-500 focus:outline-none"
-                          >
-                            {statuses?.length > 0 ? (
-                              statuses.map((status, index) => (
-                                <option value={status} key={index}>
-                                  {status}
-                                </option>
-                              ))
-                            ) : (
-                              <></>
-                            )}
-                          </select>
-                        </TableCell>
-
-                        <TableEditCell
-                          name="jobUrl"
-                          type="textArea"
-                          value={editValues.jobUrl}
-                          onChange={handleInputChange}
-                        />
-
-                        <TableEditCell
-                          name="notes"
-                          type="textArea"
-                          value={editValues.notes}
-                          onChange={handleInputChange}
-                        />
-
-                        <TableCell className="bg-white px-6 py-4">
-                          <TableTextButton
-                            onClick={() => handleSave(application.id, index)}
-                            className="text-green-700 hover:text-green-500"
-                          >
-                            Save
-                          </TableTextButton>
-
-                          <TableTextButton
-                            onClick={handleCancel}
-                            className="absolute top-2 right-2 text-lg text-red-700 hover:text-red-500"
-                          >
-                            <FaTimes />
-                          </TableTextButton>
-                        </TableCell>
-                      </>
+                      <EditTableRow
+                        index={index}
+                        editValues={editValues}
+                        statuses={statuses}
+                        application={application}
+                        handleInputChange={handleInputChange}
+                        handleSave={handleSave}
+                        handleCancelEdit={handleCancelEdit}
+                      />
                     ) : (
                       // display the row
-                      <>
-                        <TableCell className="font-medium whitespace-nowrap text-gray-900 dark:text-white">
-                          {application.companyName}
-                        </TableCell>
-                        <TableCell>{application.jobTitle}</TableCell>
-                        <TableCell>{application.dateApplied}</TableCell>
-                        <TableCell>
-                          <StatusTag>{application.statusName}</StatusTag>
-                        </TableCell>
-                        <TableCell>
-                          <a href={`${application.jobUrl}`} target="_blank">
-                            <HiOutlineLink />
-                          </a>
-                        </TableCell>
-                        <TableCell>{application.notes}</TableCell>
-                        <TableCell className=" ">
-                          <Dropdown
-                            label={<span className="text-2xl"></span>}
-                            inline
-                          >
-                            <DropdownItem
-                              onClick={() => handleEditClick(index)}
-                            >
-                              Edit
-                            </DropdownItem>
-                            <DropdownItem
-                              onClick={() => {
-                                setDeleteIndex(index);
-                                setDeleteId(application.id);
-                              }}
-                            >
-                              Delete
-                            </DropdownItem>
-                          </Dropdown>
-                        </TableCell>
-                      </>
+                      <DisplayTableRow
+                        application={application}
+                        index={index}
+                        handleEditClick={handleEditClick}
+                        handleDeleteClick={handleDeleteClick}
+                      />
                     )}
                   </TableRow>
                 ))}
@@ -280,38 +195,14 @@ const Applications = () => {
         )}
       </div>
 
-      {deleteIndex !== null && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-50/50">
-          <div className="w-full max-w-sm rounded-lg bg-white p-6 shadow-lg">
-            <h2 className="mb-4 text-lg font-semibold">Delete Application</h2>
-            <p className="mb-6">
-              Are you sure you want to delete this application?
-            </p>
-            <div className="flex justify-end gap-4">
-              <button
-                className="rounded bg-gray-200 px-4 py-2 hover:bg-gray-300"
-                onClick={() => {
-                  setDeleteIndex(null);
-                  setDeleteId(null);
-                }}
-              >
-                Cancel
-              </button>
-
-              <button
-                className="rounded bg-red-600 px-4 py-2 text-white hover:bg-red-700"
-                onClick={() => {
-                  handleDelete(deleteId, deleteIndex);
-                  setDeleteIndex(null);
-                  setDeleteId(null);
-                }}
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <DeleteApplicationModal
+        openModal={openModal}
+        deleteId={deleteId}
+        deleteIndex={deleteIndex}
+        handleCloseModal={handleCloseModal}
+        handleDelete={handleDelete}
+        handleCancelDelete={handleCancelDelete}
+      />
     </div>
   );
 };

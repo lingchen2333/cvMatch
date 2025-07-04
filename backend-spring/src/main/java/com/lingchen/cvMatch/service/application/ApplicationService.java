@@ -136,13 +136,7 @@ public class ApplicationService implements IApplicationService {
         user.getApplications().removeIf(app -> app.getId().equals(id));
         userRepository.save(user);
 
-        Status status = application.getStatus();
-
         applicationRepository.delete(application);
-
-        if (applicationRepository.getApplicationsByStatus(status).isEmpty()) {
-            statusRepository.delete(status);
-        }
     }
 
 
