@@ -20,6 +20,8 @@ import { getAllStatuses } from "../../store/features/statusSlice";
 import DisplayTableRow from "../common/table/DisplayTableRow";
 import EditTableRow from "../common/table/EditTableRow";
 import DeleteApplicationModal from "../common/DeleteApplicationModal";
+import StatusButtonGroup from "../common/StatusButtonGroup";
+import { useSearchParams } from "react-router";
 
 const Applications = () => {
   const dispatch = useDispatch();
@@ -41,9 +43,25 @@ const Applications = () => {
   const [deleteId, setDeleteId] = useState(null);
   const [openModal, setOpenModal] = useState(false);
 
+  const [searchParams, setSearchParams] = useSearchParams();
+
   useEffect(() => {
-    dispatch(getUserApplications({ userId, pageNumber }));
+    const statusFilter = searchParams.get("status");
+    // Reset to first page when status filter changes
+    if (pageNumber !== 0) {
+      dispatch(setPageNumer(0));
+    } else {
+      dispatch(
+        getUserApplications({ userId, pageNumber, status: statusFilter }),
+      );
+    }
     dispatch(getAllStatuses());
+    console.log("search param:", searchParams.get("status"));
+  }, [dispatch, userId, searchParams]);
+
+  useEffect(() => {
+    const statusFilter = searchParams.get("status");
+    dispatch(getUserApplications({ userId, pageNumber, status: statusFilter }));
   }, [dispatch, userId, pageNumber]);
 
   const handleEditClick = (index) => {
@@ -126,7 +144,10 @@ const Applications = () => {
 
   return (
     <div className="flex flex-col gap-y-5">
-      <h1 className="ms-5 text-xl font-medium">All Applications</h1>
+      <div className="flex flex-row justify-between">
+        <h1 className="ms-5 text-xl font-medium">All Applications</h1>
+        <StatusButtonGroup />
+      </div>
 
       <div className="overflow-x-auto">
         {applications?.length > 0 ? (
@@ -179,8 +200,11 @@ const Applications = () => {
             </Table>
             <div className="mt-10 flex overflow-x-auto sm:justify-center">
               <Pagination
+                layout="table"
                 currentPage={pageNumber + 1}
-                totalPages={totalPages}
+                // totalPages={totalPages}
+                itemsPerPage={pageSize}
+                totalItems={totalApplications}
                 onPageChange={onPageChange}
                 showIcons
               />

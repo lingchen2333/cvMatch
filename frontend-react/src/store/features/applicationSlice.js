@@ -3,11 +3,13 @@ import { authApi } from "../../service/api";
 
 export const getUserApplications = createAsyncThunk(
   "app/getUserApplications",
-  async ({ userId, pageNumber = 0 }) => {
-    const response = await authApi.get(
-      `/users/${userId}/applications?pageNumber=${pageNumber} `,
-    );
-    console.log("get user applications:", response.data);
+  async ({ userId, pageNumber = 0, status = null }) => {
+    let url = `/users/${userId}/applications?pageNumber=${pageNumber}`;
+    if (status) {
+      url += `&status=${status}`;
+    }
+    const response = await authApi.get(url);
+    // console.log("get user applications:", response.data);
     return response.data;
   },
 );
@@ -16,7 +18,7 @@ export const updateApplicationById = createAsyncThunk(
   "app/updateApplicationById",
   async ({ id, application }) => {
     const response = await authApi.put(`/applications/${id}`, application);
-    console.log("update applications by id:", response.data);
+    // console.log("update applications by id:", response.data);
     return response.data;
   },
 );
@@ -25,7 +27,7 @@ export const addApplication = createAsyncThunk(
   "app/addApplication",
   async (application) => {
     const response = await authApi.post(`/applications`, application);
-    console.log("add application:", response.data);
+    // console.log("add application:", response.data);
     return response.data;
   },
 );
@@ -34,7 +36,7 @@ export const deleteApplication = createAsyncThunk(
   "app/deleteApplication",
   async (applicationId) => {
     const response = await authApi.delete(`/applications/${applicationId}`);
-    console.log("delete application:", response.data);
+    // console.log("delete application:", response.data);
     return response.data;
   },
 );
