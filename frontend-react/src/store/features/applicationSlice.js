@@ -3,11 +3,26 @@ import { authApi } from "../../service/api";
 
 export const getUserApplications = createAsyncThunk(
   "app/getUserApplications",
-  async ({ userId, pageNumber = 0, status = null }) => {
+  async ({
+    userId,
+    pageNumber = 0,
+    status = null,
+    sortBy = null,
+    sortOrder = null,
+  }) => {
     let url = `/users/${userId}/applications?pageNumber=${pageNumber}`;
     if (status) {
       url += `&status=${status}`;
     }
+
+    if (sortBy) {
+      url += `&sortBy=${sortBy}`;
+    }
+
+    if (sortOrder) {
+      url += `&sortOrder=${sortOrder}`;
+    }
+
     const response = await authApi.get(url);
     // console.log("get user applications:", response.data);
     return response.data;

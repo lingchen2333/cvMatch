@@ -37,7 +37,9 @@ public class ApplicationService implements IApplicationService {
     public ApplicationResponse getUserApplications(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
         User user = userService.getAuthenticatedUser();
 
-        Sort sortByAndOrder = sortOrder.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        Sort.Direction direction = Sort.Direction.fromOptionalString(sortOrder).orElse(Sort.Direction.ASC);
+        Sort sortByAndOrder = Sort.by(Sort.Order.by(sortBy).with(direction).ignoreCase());
+        
         Pageable pageDetails = PageRequest.of(pageNumber, pageSize, sortByAndOrder);
         Page<Application> applicationPage = applicationRepository.findAllByUser(user, pageDetails);
 
@@ -60,7 +62,10 @@ public class ApplicationService implements IApplicationService {
     public ApplicationResponse getUserApplicationsByStatus(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder, String statusName) {
         User user = userService.getAuthenticatedUser();
 
-        Sort sortByAndOrder = sortOrder.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        Sort.Direction direction = Sort.Direction.fromOptionalString(sortOrder).orElse(Sort.Direction.ASC);
+        Sort sortByAndOrder = Sort.by(Sort.Order.by(sortBy).with(direction).ignoreCase());
+
+
         Pageable pageDetails = PageRequest.of(pageNumber, pageSize, sortByAndOrder);
         Page<Application> applicationPage = applicationRepository.findAllByUserAndStatusName(user, statusName, pageDetails);
 
