@@ -15,6 +15,10 @@ const StatusTag = ({ children }) => {
     color = "success";
   }
 
+  if (children == "rejected (no interview)") {
+    color = "indigo";
+  }
+
   if (children == "rejected") {
     color = "gray";
   }

@@ -52,9 +52,7 @@ const ApplicationsTable = () => {
     if (pageNumber !== 0) {
       dispatch(setPageNumer(0));
     } else {
-      dispatch(
-        getUserApplications({ userId, pageNumber, status, sortBy, sortOrder }),
-      );
+      dispatch(getUserApplications({ pageNumber, status, sortBy, sortOrder }));
     }
     dispatch(getAllStatuses());
     // console.log("search param:", searchParams.get("status"));
@@ -97,9 +95,9 @@ const ApplicationsTable = () => {
       await promise;
       // Refresh the applications data to reflect the updated status
       const statusFilter = searchParams.get("status");
-      dispatch(
-        getUserApplications({ userId, pageNumber, status: statusFilter }),
-      );
+      dispatch(getUserApplications({ pageNumber, status: statusFilter }));
+      // Refresh status counts after successful update
+      dispatch(getApplicationCountsByStatus({ userId }));
     } catch (error) {}
 
     setEditingIndex(null);

@@ -5,6 +5,11 @@ import com.lingchen.cvMatch.model.Application;
 import com.lingchen.cvMatch.request.AddApplicationRequest;
 import com.lingchen.cvMatch.request.UpdateApplicationRequest;
 import com.lingchen.cvMatch.response.ApplicationResponse;
+import com.lingchen.cvMatch.response.ApplicationsMonthlyCountResponse;
+import com.lingchen.cvMatch.response.sankeyResponse.SankeyResponse;
+
+import java.util.List;
+import java.util.Map;
 
 public interface IApplicationService {
     ApplicationResponse getUserApplications(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder);
@@ -16,6 +21,9 @@ public interface IApplicationService {
     void deleteApplicationById(long id);
 
 
+    Map<String, Long> getApplicationStatusCounts();
+    List<ApplicationsMonthlyCountResponse> getApplicationsMonthlyCount();
+    SankeyResponse getApplicationSankeyData();
 
     ApplicationDto convertToDto(Application application);
 }

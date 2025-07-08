@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { addApplication } from "../../store/features/applicationSlice";
+import {
+  addApplication,
+  getApplicationCountsByStatus,
+} from "../../store/features/applicationSlice";
 import { useDispatch, useSelector } from "react-redux";
 import FormRow from "../common/form/FormRow";
 import Button from "../common/Button";
@@ -42,6 +45,14 @@ const AddApplication = () => {
       success: "Application added",
       error: "Application can't be added",
     });
+
+    try {
+      await promise;
+      // Refresh status counts after successful addition
+      dispatch(getApplicationCountsByStatus());
+    } catch (error) {
+      // Error is already handled by toast.promise
+    }
   };
 
   return (

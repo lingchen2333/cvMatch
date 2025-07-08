@@ -1,10 +1,7 @@
 import React from "react";
-import { Dropdown, DropdownItem, Label, Select } from "flowbite-react";
-import { useDispatch } from "react-redux";
 import { useSearchParams } from "react-router";
 
 const SortBy = () => {
-  const dispatch = useDispatch();
   const [searchParams, setSearchParams] = useSearchParams();
   const options = [
     { sortBy: "dateApplied", sortOrder: "desc", label: "Latest" },

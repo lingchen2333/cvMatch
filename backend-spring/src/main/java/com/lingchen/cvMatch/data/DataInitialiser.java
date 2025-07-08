@@ -42,12 +42,18 @@ public class DataInitialiser implements ApplicationListener<ApplicationReadyEven
             statusRepository.save(new Status("interviewing"));
         }
 
-        if (!statusRepository.existsByName("offer")) {
-            statusRepository.save(new Status("offer"));
+        if (!statusRepository.existsByName("rejected (no interview)")) {
+            statusRepository.save(new Status("rejected (no interview)"));
         }
 
         if (!statusRepository.existsByName("rejected")) {
             statusRepository.save(new Status("rejected"));
         }
+
+        if (!statusRepository.existsByName("offer")) {
+            statusRepository.save(new Status("offer"));
+        }
+
+
     }
 }

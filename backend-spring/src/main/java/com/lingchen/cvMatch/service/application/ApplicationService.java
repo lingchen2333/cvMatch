@@ -11,6 +11,10 @@ import com.lingchen.cvMatch.repository.UserRepository;
 import com.lingchen.cvMatch.request.AddApplicationRequest;
 import com.lingchen.cvMatch.request.UpdateApplicationRequest;
 import com.lingchen.cvMatch.response.ApplicationResponse;
+import com.lingchen.cvMatch.response.ApplicationsMonthlyCountResponse;
+import com.lingchen.cvMatch.response.sankeyResponse.SankeyLink;
+import com.lingchen.cvMatch.response.sankeyResponse.SankeyNode;
+import com.lingchen.cvMatch.response.sankeyResponse.SankeyResponse;
 import com.lingchen.cvMatch.service.user.IUserService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -20,7 +24,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.YearMonth;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -39,7 +48,7 @@ public class ApplicationService implements IApplicationService {
 
         Sort.Direction direction = Sort.Direction.fromOptionalString(sortOrder).orElse(Sort.Direction.ASC);
         Sort sortByAndOrder = Sort.by(Sort.Order.by(sortBy).with(direction).ignoreCase());
-        
+
         Pageable pageDetails = PageRequest.of(pageNumber, pageSize, sortByAndOrder);
         Page<Application> applicationPage = applicationRepository.findAllByUser(user, pageDetails);
 
@@ -142,6 +151,96 @@ public class ApplicationService implements IApplicationService {
         userRepository.save(user);
 
         applicationRepository.delete(application);
+    }
+
+    @Override
+    public Map<String, Long> getApplicationStatusCounts() {
+        User user = userService.getAuthenticatedUser();
+        return statusRepository.findAll().stream().collect(Collectors.toMap(
+                status -> status.getName(),
+                status -> applicationRepository.countByUserAndStatusName(user, status.getName())
+        ));
+    }
+
+    @Override
+    public List<ApplicationsMonthlyCountResponse> getApplicationsMonthlyCount() {
+        User user = userService.getAuthenticatedUser();
+        List<Object[]> results = applicationRepository.countApplicationsPerMonth(user);
+
+        Map<String, Long> dbCounts = results.stream()
+                .collect(Collectors.toMap(
+                        row -> (String) row[0], // "YYYY-MM"
+                        row -> (Long) row[1]
+                ));
+
+        YearMonth start = dbCounts.keySet().stream()
+                .map(YearMonth::parse)
+                .min(Comparator.naturalOrder())
+                .orElse(YearMonth.now());
+
+        YearMonth end = dbCounts.keySet().stream()
+                .map(YearMonth::parse)
+                .max(Comparator.naturalOrder())
+                .orElse(YearMonth.now());
+
+        List<ApplicationsMonthlyCountResponse> completeCounts = new ArrayList<>();
+        YearMonth current = start;
+
+        while (!current.isAfter(end)) {
+            String month = current.toString(); // "YYYY-MM"
+            Long count = dbCounts.getOrDefault(month, 0L);
+            completeCounts.add(new ApplicationsMonthlyCountResponse(month, count));
+            current = current.plusMonths(1);
+        }
+
+        return completeCounts;
+    }
+
+    @Override
+    public SankeyResponse getApplicationSankeyData() {
+
+
+        User user = userService.getAuthenticatedUser();
+        long totalCount = applicationRepository.countByUser(user);
+        long appliedCount = applicationRepository.countByUserAndStatusName(user, "applied");
+        long interviewingCount = applicationRepository.countByUserAndStatusName(user, "interviewing");
+        long rejectedCount = applicationRepository.countByUserAndStatusName(user, "rejected");
+        long rejectWithoutInterviewCount = applicationRepository.countByUserAndStatusName(user, "rejected (no interview)");
+        long offerCount = applicationRepository.countByUserAndStatusName(user, "offer");
+
+        long replyCount = interviewingCount + rejectedCount + offerCount + rejectWithoutInterviewCount;
+        long interviewCount = interviewingCount + rejectedCount + offerCount;
+
+        List<SankeyLink> links = List.of(
+                        new SankeyLink("Applications", "Replies", replyCount),
+                        new SankeyLink("Applications", "No Replies", appliedCount),  // Applied → pending
+                        new SankeyLink("Replies", "Interviews", interviewCount), // Interview scheduled → interviewing
+                        new SankeyLink("Replies", "Rejected", rejectWithoutInterviewCount), // Interview scheduled → rejected
+                        new SankeyLink("Interviews", "Pending", interviewingCount), // Interview scheduled → offer
+                        new SankeyLink("Interviews", "Rejected", rejectedCount),  // Applied → reject
+                        new SankeyLink("Interviews", "Offer", offerCount)   // Applied → reject
+                )
+                .stream().filter(link -> link.getValue() > 0).collect(Collectors.toList());
+
+        List<SankeyNode> nodes = new ArrayList<>();
+
+        addSankeyNode(nodes, "Applications", totalCount);
+        addSankeyNode(nodes, "Replies", replyCount);
+        addSankeyNode(nodes, "No Replies", appliedCount);
+        addSankeyNode(nodes, "Interviews", interviewCount);
+        addSankeyNode(nodes, "Rejected", rejectWithoutInterviewCount + rejectedCount);
+        addSankeyNode(nodes, "Offer", offerCount);
+        addSankeyNode(nodes, "Pending", interviewingCount);
+
+        return new SankeyResponse(nodes, links);
+
+
+    }
+
+    private void addSankeyNode(List<SankeyNode> nodes, String nodeName, long count) {
+        if (count > 0) {
+            nodes.add(new SankeyNode(nodeName));
+        }
     }
 
 
