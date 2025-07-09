@@ -19,6 +19,7 @@ const StatusButtonGroup = () => {
     } else {
       searchParams.set("status", status);
     }
+    if (searchParams.get("page")) searchParams.set("page", 1);
 
     setSearchParams(searchParams);
   }

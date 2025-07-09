@@ -26,14 +26,9 @@ const ApplicationsTable = () => {
   const dispatch = useDispatch();
 
   const userId = localStorage.getItem("userId");
-  const {
-    applications,
-    pageNumber,
-    pageSize,
-    totalApplications,
-    totalPages,
-    lastPage,
-  } = useSelector((state) => state.application);
+  const { applications, pageSize, totalApplications } = useSelector(
+    (state) => state.application,
+  );
   const statuses = useSelector((state) => state.status.statuses);
 
   const [editingIndex, setEditingIndex] = useState(null);
@@ -43,20 +38,17 @@ const ApplicationsTable = () => {
   const [openModal, setOpenModal] = useState(false);
 
   const [searchParams, setSearchParams] = useSearchParams();
+  const pageNumber = !searchParams.get("page")
+    ? 0
+    : searchParams.get("page") - 1;
+  const status = searchParams.get("status");
+  const sortBy = searchParams.get("sortBy");
+  const sortOrder = searchParams.get("sortOrder");
 
   useEffect(() => {
-    const status = searchParams.get("status");
-    const sortBy = searchParams.get("sortBy");
-    const sortOrder = searchParams.get("sortOrder");
-    // Reset to first page when status filter changes
-    if (pageNumber !== 0) {
-      dispatch(setPageNumer(0));
-    } else {
-      dispatch(getUserApplications({ pageNumber, status, sortBy, sortOrder }));
-    }
+    dispatch(getUserApplications({ pageNumber, status, sortBy, sortOrder }));
     dispatch(getAllStatuses());
-    // console.log("search param:", searchParams.get("status"));
-  }, [dispatch, userId, searchParams, pageNumber]);
+  }, [dispatch, userId, searchParams]);
 
   const handleEditClick = (index) => {
     setEditingIndex(index);
@@ -93,11 +85,7 @@ const ApplicationsTable = () => {
 
     try {
       await promise;
-      // Refresh the applications data to reflect the updated status
-      const statusFilter = searchParams.get("status");
-      dispatch(getUserApplications({ pageNumber, status: statusFilter }));
-      // Refresh status counts after successful update
-      dispatch(getApplicationCountsByStatus({ userId }));
+      dispatch(getUserApplications({ pageNumber, status }));
     } catch (error) {}
 
     setEditingIndex(null);
@@ -109,8 +97,8 @@ const ApplicationsTable = () => {
   };
 
   const onPageChange = (page) => {
-    console.log("page:", page);
-    dispatch(setPageNumer(page - 1));
+    searchParams.set("page", page);
+    setSearchParams(searchParams);
   };
 
   const handleDelete = async (applicationId, index) => {
@@ -193,7 +181,6 @@ const ApplicationsTable = () => {
             <Pagination
               layout="table"
               currentPage={pageNumber + 1}
-              // totalPages={totalPages}
               itemsPerPage={pageSize}
               totalItems={totalApplications}
               onPageChange={onPageChange}
