@@ -44,9 +44,6 @@ const SankeyChart = () => {
     }
   }, [width, height]);
 
-  console.log("Container dimensions:", { width, height });
-  console.log("Chart dimensions:", chartDimensions);
-
   if (
     !sankeyData?.nodes?.length ||
     !sankeyData?.links?.length ||

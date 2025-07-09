@@ -114,7 +114,7 @@ const applicationSlice = createSlice({
       })
       .addCase(getApplicationCountsByStatus.fulfilled, (state, action) => {
         state.statusCounts = action.payload;
-        console.log("state.statusCounts:", state.statusCounts);
+        // console.log("state.statusCounts:", state.statusCounts);
       })
       .addCase(getMonthlyApplicationCounts.fulfilled, (state, action) => {
         state.monthlyApplicaitons = action.payload;
@@ -122,7 +122,7 @@ const applicationSlice = createSlice({
       })
       .addCase(getSankeyData.fulfilled, (state, action) => {
         state.sankeyData = action.payload;
-        console.log("state.sankeyData:", state.sankeyData);
+        // console.log("state.sankeyData:", state.sankeyData);
       });
   },
 });

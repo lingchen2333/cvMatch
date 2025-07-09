@@ -9,15 +9,14 @@ import lombok.Setter;
 @Setter
 public class UpdateUserRequest {
 
-    @NotBlank
     @Size(max = 20)
     private String firstName;
 
-    @NotBlank
+
     @Size(max = 20)
     private String lastName;
 
-    @NotBlank
+//    @NotBlank
     @Size(max = 120, min = 6)
     private String password;
 }

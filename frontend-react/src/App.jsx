@@ -7,6 +7,7 @@ import ProtectedRoute from "./component/auth/ProtectedRoute";
 import { Toaster } from "react-hot-toast";
 import Applications from "./component/application/Applications";
 import AddApplication from "./component/application/AddApplication";
+import Profile from "./component/profile/Profile";
 
 function App() {
   return (
@@ -24,7 +25,7 @@ function App() {
           <Route path="/add-application" element={<AddApplication />} />
           <Route path="/applications" element={<Applications />} />
           <Route path="/upload-cv" element={<Home />} />
-          <Route path="/profile" element={<Home />} />
+          <Route path="/profile" element={<Profile />} />
         </Route>
         <Route path="/login" element={<Login />} />
       </Routes>

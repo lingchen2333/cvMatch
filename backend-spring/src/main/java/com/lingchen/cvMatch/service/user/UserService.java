@@ -46,9 +46,15 @@ public class UserService implements IUserService {
     @Override
     public User updateUser(UpdateUserRequest request) {
         User user = this.getAuthenticatedUser();
-        user.setFirstName(request.getFirstName());
-        user.setLastName(request.getLastName());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        if (request.getFirstName() != null) {
+            user.setFirstName(request.getFirstName());
+        }
+        if (request.getLastName() != null) {
+            user.setLastName(request.getLastName());
+        }
+        if (request.getPassword() != null) {
+            user.setPassword(passwordEncoder.encode(request.getPassword()));
+        }
         return userRepository.save(user);
     }
 

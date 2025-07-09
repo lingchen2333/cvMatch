@@ -9,6 +9,7 @@ const FormRow = ({
   required,
   handleChange,
   className,
+  disabled,
 }) => {
   return (
     <div className="flex w-full flex-col space-y-2">
@@ -24,6 +25,7 @@ const FormRow = ({
         onChange={handleChange}
         className={`block w-full rounded-md border border-gray-300 bg-white py-3 pr-3 pl-2 focus:border-blue-500 focus:outline-none md:py-4 ${className} `}
         required={required}
+        disabled={disabled}
       />
     </div>
   );
