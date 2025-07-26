@@ -8,7 +8,7 @@ import UpdatePasswordForm from "./UpdatePasswordForm";
 
 const Profile = () => {
   return (
-    <div className="flex flex-col gap-y-5">
+    <div className="mx-auto flex max-w-2xl flex-col gap-y-5">
       <h1 className="ms-5 text-xl font-medium">Account Settings</h1>
       <div>
         <h2 className="text-l ms-5 font-medium">Update user Name</h2>

@@ -56,7 +56,7 @@ const AddApplication = () => {
   };
 
   return (
-    <div className="flex flex-col gap-y-5">
+    <div className="mx-auto flex max-w-2xl flex-col gap-y-5 p-8 font-sans">
       <h1 className="ms-5 text-xl font-medium">Add Application</h1>
 
       <form
