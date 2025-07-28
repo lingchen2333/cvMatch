@@ -29,8 +29,8 @@ const SideBar = () => {
 
           <SidebarNavLink
             id={4}
-            to="/upload-cv"
-            text="upload CV"
+            to="/cv"
+            text="analyze CV"
             icon={<HiOutlineUpload />}
           />
           <SidebarNavLink

@@ -25,7 +25,7 @@ function App() {
 
           <Route path="/add-application" element={<AddApplication />} />
           <Route path="/applications" element={<Applications />} />
-          <Route path="/upload-cv" element={<CV />} />
+          <Route path="/cv" element={<CV />} />
           <Route path="/profile" element={<Profile />} />
         </Route>
         <Route path="/login" element={<Login />} />
