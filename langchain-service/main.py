@@ -24,10 +24,14 @@ app.add_middleware(
 )
 
 
+class ImprovementSuggestion(BaseModel):
+    suggestion: str
+    example: str
+
 class MatchResult(BaseModel):
     highlighted_matches: List[str]
     missing_areas: List[str]
-    improvement_suggestions: List[str]
+    improvement_suggestions: List[ImprovementSuggestion]
     score: int
 
 
@@ -51,33 +55,78 @@ async def analyze_cv(cv: UploadFile = File(...), job_description: str = Form(...
 
     # 2. LangChain logic
     llm = ChatOpenAI(
-        model="gpt-4",  # or "gpt-3.5-turbo"
+        model="gpt-4",
         temperature=0.2,
     )
 
-    prompt = ChatPromptTemplate.from_messages([
-        ("system",
-        """You are an expert career coach and recruiter.
-        Your task is to analyze how well a candidate's CV matches a job description.
-        Return a JSON object with:
-        - highlighted_matches: a list of specific keywords, phrases, or experiences from the CV that align with the job description.
-        - missing_areas: a list of required qualifications, skills, or experiences mentioned in the job description but absent in the CV.
-        - improvement_suggestions: a list of actionable and tailored to the job.
-        - score: an integer from 0 to 100 representing the overall match quality.
-        Keep explanations short and clear.
-        Only return valid JSON, no extra commentary.
-        """),
-        ("user",
-        f"""CV:
-        {cv_text}
-
-        Job Description:
-        {job_description}
-
-        Please analyze and return the result as specified above.
-        """)
-    ])
-
+    prompt = ChatPromptTemplate.from_messages(
+        [
+            (
+            "system",
+            """
+            Analyze a candidate's CV against a job description to assess the match quality. Interpret qualifications and experience semantically—if a qualification is satisfied using different wording or phrasing in the CV, consider it fulfilled and do not mark it as missing. Produce a JSON object with the following fields:
+            
+            - highlighted_matches: List specific keywords, phrases, or experiences from the CV that directly align with the requirements in the job description.
+            - missing_areas: List any required qualifications, skills, or experiences from the job description that are not present or reasonably inferred in the CV.
+            - improvement_suggestions: Offer general, CV-agnostic improvement suggestions (structure, clarity, tone, formatting). Each suggestion must include a concrete, personalized example derived from the candidate's own CV content.
+            - score: An integer (0–100) indicating how well the CV matches the job description.
+            
+            Instructions:
+            
+            - Focus on semantic understanding; avoid penalizing for different wording if the meaning is clear.
+            - Explanations should be concise.
+            - Output must be valid JSON only, with no extra commentary.
+            - Think step-by-step: First identify direct matches and fulfillments; then systematically check for missing job criteria; finally, review the CV structure to suggest concrete improvements.
+            - Persist until all above objectives are met before finalizing the answer.
+            
+            Output Format:
+            Return a single JSON object with the keys: highlighted_matches (list), missing_areas (list), improvement_suggestions (list of objects with 'suggestion' and 'example' fields), and score (integer). Do not wrap the JSON in a code block or include any extra text.
+            
+            Example (for illustration only—the real analysis will require information from actual CV and job descriptions):
+            
+            {{
+              "highlighted_matches": [
+                "Project management experience with agile teams",
+                "Certification: AWS Solutions Architect",
+                "5+ years in software engineering roles"
+              ],
+              "missing_areas": [
+                "Experience with machine learning frameworks",
+                "Fluency in Spanish"
+              ],
+              "improvement_suggestions": [
+                {{
+                  "suggestion": "Add a summary section to improve CV clarity.",
+                  "example": "E.g., Introduce a 'Professional Summary' at the top highlighting key accomplishments, such as: 'Seasoned software engineer with 7 years of full-stack experience and AWS certification.'"
+                }},
+                {{
+                  "suggestion": "Consistent formatting of job titles and dates.",
+                  "example": "E.g., Standardize employment date format—use 'Jan 2020 – Dec 2022' throughout CV."
+                }}
+              ],
+              "score": 82
+            }}
+            
+            (Remember: In real answers, the above lists and suggestions should use information from the actual CV and job description provided.)
+            
+            Important Reminder:
+            - Interpret requirements semantically and avoid redundant missing_areas.
+            - Provide improvement suggestions with explicit, personalized examples based on the CV content.
+            - Only output a single, valid JSON object with the specified structure.""",
+            ),
+            (
+            "user",
+            f"""CV:
+            {cv_text}
+    
+            Job Description:
+            {job_description}
+    
+            Please analyze and return the result as specified above.
+            """,
+            ),
+        ]
+    )
 
     # Run the chain
     chain = prompt | llm
