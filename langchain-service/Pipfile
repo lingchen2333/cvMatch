@@ -12,7 +12,8 @@ langchainhub = "*"
 black = "*"
 fastapi = "*"
 pypdf = "*"
-pypdf2 = "*"
+PyPDF2 = "*"
+python-multipart = "*"
 
 [dev-packages]
 
