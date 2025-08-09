@@ -1,12 +1,9 @@
 from dotenv import load_dotenv
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from langchain import hub
-from langchain.chains.combine_documents import create_stuff_documents_chain
-from langchain.chains.retrieval import create_retrieval_chain
 from langchain_pinecone import PineconeVectorStore
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import List
 import os
 import tempfile
 import PyPDF2
@@ -22,8 +19,9 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[os.environ["FRONTEND_URL"],],
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
+    expose_headers=["*"],
 )
 
 
