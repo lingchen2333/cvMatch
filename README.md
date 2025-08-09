@@ -4,7 +4,7 @@ cvMatch is a full-stack application designed to help users match their CVs to jo
 
 - **Frontend**: React + Vite SPA
 - **Backend**: Spring Boot REST API
-- **AI Service**: Python FastAPI service using LangChain and OpenAI
+- **AI Service**: Python FastAPI service using LangChain and OpenAI with RAG (Retrieval-Augmented Generation)
 
 ---
 
@@ -16,23 +16,70 @@ cv-match/
 ├── frontend-react/        # React + Vite frontend
 ├── backend-spring/        # Spring Boot backend API
 ├── langchain-service/     # Python FastAPI AI microservice
+│   ├── cv_examples_and_guides/  # Knowledge base for RAG
+│   ├── main.py           # FastAPI application with RAG
+│   └── ingestion.py      # Document ingestion script
 ```
 
 ---
 
 ## Features
 
-### 1. CV Analysis (AI Service)
+### 1. CV Analysis (AI Service with RAG)
 
 - Upload a CV (PDF) and a job description.
-- The service semantically analyzes the CV against the job description using OpenAI (via LangChain).
+- The service uses **Retrieval-Augmented Generation (RAG)** to enhance CV analysis:
+  - Retrieves relevant CV writing guides and examples from a knowledge base
+  - Combines retrieved context with semantic analysis using OpenAI (via LangChain)
+  - Provides more accurate and contextual improvement suggestions
 - Returns:
   - Highlighted matches (skills/experience found)
   - Missing areas (requirements not found)
-  - Personalized improvement suggestions
+  - Personalized improvement suggestions (enhanced by RAG context)
   - A match score (0-100)
 
-### 2. Job Application Tracking (Backend)
+### 2. RAG Implementation
+
+The AI service implements a sophisticated RAG system for enhanced CV analysis:
+
+#### Knowledge Base
+
+- **Document Collection**: CV writing guides, examples, and best practices stored in `cv_examples_and_guides/`
+- **Document Types**: PDFs and text files containing:
+  - CV writing guidelines and templates
+  - Action words and power verbs
+  - Gap explanation strategies
+  - Undergraduate CV examples
+  - Postgraduate CV examples
+  - Postgraduate Researcher CV examples
+
+#### Vector Database
+
+- **Pinecone Vector Store**: Stores document embeddings for efficient retrieval
+- **OpenAI Embeddings**: Uses OpenAI's embedding model for semantic vectorization
+- **Chunking Strategy**: Documents split into 1000-character chunks with 200-character overlap
+
+#### Retrieval Process
+
+1. **Query Construction**: Combines CV content and job description into a semantic search query
+2. **Document Retrieval**: Uses vector similarity search to find relevant guidance documents
+3. **Context Integration**: Retrieved documents provide context for more informed analysis
+4. **Enhanced Suggestions**: Improvement suggestions leverage retrieved best practices and examples
+
+#### Setup and Maintenance
+
+```bash
+# Ingest documents into vector database
+cd langchain-service
+python ingestion.py
+
+# Required environment variables
+PINECONE_API_KEY=your_pinecone_key
+PINECONE_INDEX_NAME=your_index_name
+OPENAI_API_KEY=your_openai_key
+```
+
+### 3. Job Application Tracking (Backend)
 
 - User authentication (JWT-based, with refresh tokens)
 - CRUD for job applications:
@@ -62,6 +109,7 @@ cv-match/
 - Python 3.9+ (for AI service)
 - Java 17+ and Maven (for backend)
 - OpenAI API key (for AI service)
+- Pinecone API key and index (for RAG vector database)
 
 ### Setup
 
@@ -86,6 +134,18 @@ cd backend-spring
 cd langchain-service
 pip install pipenv
 pipenv install
+
+# Set up environment variables
+cp .env.example .env
+# Edit .env with your API keys:
+# - OPENAI_API_KEY
+# - PINECONE_API_KEY
+# - PINECONE_INDEX_NAME
+
+# Ingest documents into vector database (first time setup)
+python ingestion.py
+
+# Start the service
 pipenv run python main.py
 ```
 
@@ -105,15 +165,43 @@ pipenv run python main.py
 - `/api/applications/sankey-data` — Sankey diagram data
 - `/api/statuses` — Get all application statuses
 
-### AI Service (FastAPI)
+### AI Service (FastAPI with RAG)
 
-- `POST /analyze` — Analyze a CV (PDF) against a job description
+- `POST /analyze` — Analyze a CV (PDF) against a job description using RAG-enhanced analysis
+  - **Input**: CV file (PDF) and job description text
+  - **Process**: Retrieves relevant CV guidance documents, combines with semantic analysis
+  - **Output**: Enhanced analysis with contextual improvement suggestions
 
 ---
 
 ## Environment Variables
 
-Each service uses its own `.env` file for configuration (API keys, DB credentials, etc.).
+Each service uses its own `.env` file for configuration:
+
+### AI Service (langchain-service/.env)
+
+```
+OPENAI_API_KEY=your_openai_api_key
+PINECONE_API_KEY=your_pinecone_api_key
+PINECONE_INDEX_NAME=your_pinecone_index_name
+```
+
+### Backend (backend-spring/.env)
+
+```
+DATASOURCE_URL=your_database_url
+DATASOURCE_USER=your_database_user
+DATASOURCE_PASSWORD=your_database_password
+AUTH_TOKEN_JWT_SECRET=your_jwt_secret
+FRONTEND_URL=http://localhost:5173
+```
+
+### Frontend (frontend-react/.env)
+
+```
+VITE_API_URL=http://localhost:8080/api/v1
+VITE_LANGCHAIN_API_URL=http://localhost:8001
+```
 
 ---
 
@@ -127,6 +215,8 @@ Each service uses its own `.env` file for configuration (API keys, DB credential
 
 - [LangChain](https://github.com/langchain-ai/langchain)
 - [OpenAI](https://openai.com/)
+- [Pinecone](https://www.pinecone.io/) - Vector database for RAG
 - [Spring Boot](https://spring.io/projects/spring-boot)
 - [React](https://react.dev/)
 - [Vite](https://vitejs.dev/)
+- [FastAPI](https://fastapi.tiangolo.com/) - Python web framework for AI service
