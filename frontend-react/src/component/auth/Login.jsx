@@ -49,7 +49,7 @@ const Login = () => {
 
   return (
     <div className="h-screen bg-slate-100">
-      <div className="mx-auto my-10 flex w-full flex-col items-center justify-between space-y-12 md:my-16 md:w-2xl">
+      <div className="mx-auto flex w-full flex-col items-center justify-center space-y-12 pt-8 md:w-2xl">
         <h4 className="text-4xl font-medium">Hello Again!</h4>
 
         <form

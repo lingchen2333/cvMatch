@@ -10,6 +10,19 @@ export const getAuthenticatedUser = createAsyncThunk(
   },
 );
 
+export const registerUser = createAsyncThunk(
+  "app/registerUser",
+  async ({ firstName, lastName, email, password }) => {
+    const response = await authApi.post(`/users`, {
+      firstName,
+      lastName,
+      email,
+      password,
+    });
+    return response.data;
+  },
+);
+
 export const updateAuthenticatedUser = createAsyncThunk(
   "app/updateAuthenticatedUser",
   async (updateUserRequest) => {

@@ -9,6 +9,7 @@ import Applications from "./component/application/Applications";
 import AddApplication from "./component/application/AddApplication";
 import Profile from "./component/profile/Profile";
 import CV from "./component/cv/CV";
+import Register from "./component/registration/Register";
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
           <Route path="/profile" element={<Profile />} />
         </Route>
         <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
       </Routes>
       <Toaster position="top-center" />
     </BrowserRouter>
