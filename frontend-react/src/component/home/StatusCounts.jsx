@@ -40,12 +40,12 @@ const StatusCounts = () => {
       {statusItems?.map((item) => (
         <article
           key={item.label}
-          className="rounded-2xl bg-gradient-to-tr from-blue-600 via-blue-700 to-blue-800/90 text-white shadow-xl shadow-blue-500/40"
+          className="group rounded-2xl bg-gradient-to-tr from-blue-600 via-blue-700 to-blue-800/90 text-white shadow-xl shadow-blue-500/40 transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-2xl"
         >
           <div className="flex flex-row items-center justify-center space-x-6 px-5 py-4">
-            <p className="rounded-lg outline-2 outline-offset-4 outline-blue-500 transition-all duration-300 ease-in outline-dashed hover:scale-110">
+            <div className="rounded-lg p-2 outline-2 outline-offset-4 outline-blue-500 transition-all duration-300 ease-in outline-dashed group-hover:animate-pulse hover:bg-blue-500/20 hover:outline-4 hover:outline-blue-300">
               {item.icon}
-            </p>
+            </div>
             <p className="w-1/2 font-medium text-gray-300 capitalize xl:text-xl">
               {item.label}
             </p>

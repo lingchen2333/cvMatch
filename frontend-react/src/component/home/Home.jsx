@@ -9,8 +9,8 @@ const Home = () => {
   return (
     <>
       <StatusCounts />
-      <AreaChartComponent />
       <SankeyChart />
+      <AreaChartComponent />
     </>
   );
 };
