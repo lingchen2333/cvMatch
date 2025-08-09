@@ -174,6 +174,6 @@ async def analyze_cv(cv: UploadFile = File(...), job_description: str = Form(...
             detail=f"LLM output parsing error: {e}\nRaw output: {result.content}",
         )
 
-
+port = 8001 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8001, reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=port, reload=True)

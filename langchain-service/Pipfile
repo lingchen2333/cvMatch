@@ -12,6 +12,7 @@ langchainhub = "*"
 black = "*"
 fastapi = "*"
 pypdf = "*"
+PyPDF2 = "*"
 
 [dev-packages]
 
