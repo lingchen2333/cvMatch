@@ -8,6 +8,14 @@ cvMatch is a full-stack application designed to help users match their CVs to jo
 
 ---
 
+## 🌐 Live Demo
+
+🔗 [https://match-cv.netlify.app](https://match-cv.netlify.app/)
+
+> ⚠️ **Note**: The [Springboot backend](https://cvmatch-backend.onrender.com) and [langchain service](https://cvmatch.onrender.com) are hosted on Render using the free tier, which means it may take **2 min to spin up** after a period of inactivity. You may notice a short delay on the first request — this is expected behavior on free-tier Render services.
+
+---
+
 ## Project Structure
 
 ```
@@ -91,7 +99,7 @@ OPENAI_API_KEY=your_openai_key
   - Monthly application trends
   - Sankey diagram data for application flow
 
-### 3. Frontend
+### 4. Frontend
 
 - Modern React SPA (Vite)
 - User login and registration
