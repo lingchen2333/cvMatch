@@ -1,6 +1,41 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 
 const AnalyzeButton = ({ uploadStatus, onClick, disabled }) => {
+  const [funTextIndex, setFunTextIndex] = useState(0);
+
+  const funTexts = [
+    "Reading between the lines...",
+    "Decoding CV hieroglyphics...",
+    "Consulting the career crystal ball...",
+    "Summoning the job market spirits...",
+    "Brewing the perfect career potion...",
+    "Channeling your inner professional...",
+    "Unleashing the CV analysis magic...",
+    "Scanning for hidden talents...",
+    "Connecting the career dots...",
+    "Unlocking your professional potential...",
+    "Decrypting the CV matrix...",
+    "Summoning career wisdom...",
+    "Analyzing with AI superpowers...",
+    "Finding your career supernova...",
+    "Unveiling the professional prophecy...",
+  ];
+
+  useEffect(() => {
+    let interval;
+    if (uploadStatus === "uploading") {
+      interval = setInterval(() => {
+        setFunTextIndex((prev) => (prev + 1) % funTexts.length);
+      }, 3000); // Change text every 3 seconds
+    } else {
+      setFunTextIndex(0);
+    }
+
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [uploadStatus]);
+
   return (
     <div className="text-center">
       <button
@@ -22,6 +57,12 @@ const AnalyzeButton = ({ uploadStatus, onClick, disabled }) => {
           "Analyze CV"
         )}
       </button>
+
+      {uploadStatus === "uploading" && (
+        <div className="mt-3 animate-pulse text-sm text-gray-600">
+          {funTexts[funTextIndex]}
+        </div>
+      )}
     </div>
   );
 };
