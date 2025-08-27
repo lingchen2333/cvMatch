@@ -9,7 +9,6 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 load_dotenv()
 
 
-
 if __name__ == "__main__":
     docs = []
 
@@ -26,10 +25,7 @@ if __name__ == "__main__":
         docs.extend(loader.load())
 
     print("Splitting...")
-    splitter = RecursiveCharacterTextSplitter(
-        chunk_size=1000,
-        chunk_overlap=200
-    )
+    splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
 
     split_docs = splitter.split_documents(docs)
     print(f"created {len(split_docs)} documents")
@@ -37,5 +33,7 @@ if __name__ == "__main__":
     embeddings = OpenAIEmbeddings()
 
     print("ingesting")
-    PineconeVectorStore.from_documents(split_docs, embeddings, index_name=os.environ.get("INDEX_NAME"))
+    PineconeVectorStore.from_documents(
+        split_docs, embeddings, index_name=os.environ.get("INDEX_NAME")
+    )
     print("finished")
