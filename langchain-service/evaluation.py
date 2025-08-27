@@ -13,21 +13,12 @@ from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain.prompts import ChatPromptTemplate
 
 load_dotenv()
-app = FastAPI()
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[os.environ["FRONTEND_URL"],],
-    allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allow_headers=["*"],
-    expose_headers=["*"],
-)
 
 
 class ImprovementSuggestion(BaseModel):
     suggestion: str
     example: str
+
 
 class MatchResult(BaseModel):
     highlighted_matches: List[str]
@@ -36,30 +27,18 @@ class MatchResult(BaseModel):
     score: int
 
 
-@app.post("/analyze", response_model=MatchResult)
-async def analyze_cv(cv: UploadFile = File(...), job_description: str = Form(...)):
-    # 1. Extract text from PDF
-    if cv.content_type != "application/pdf":
-        raise HTTPException(status_code=400, detail="Only PDF files are supported.")
-    try:
-        with tempfile.NamedTemporaryFile(delete=False) as tmp:
-            tmp.write(await cv.read())
-            tmp_path = tmp.name
-        with open(tmp_path, "rb") as f:
-            reader = PyPDF2.PdfReader(f)
-            cv_text = "\n".join(page.extract_text() or "" for page in reader.pages)
-        os.remove(tmp_path)
-    except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Failed to extract text from PDF: {e}"
-        )
+if __name__ == "__main__":
+    cv_text ="Proficient in UI Design, Adobe XD, Wireframing, User Research, Prototyping, with mid-level experience in the field. Holds a PhD degree. Holds certifications such as Human-Computer Interaction Certification. Skilled in delivering results and adapting to dynamic environments."
 
-    # 2. Initialize LangChain components
+
+    job_description = "Design user interfaces, improve user experiences, and create intuitive and visually appealing digital products. Conduct user research to gather feedback and incorporate it into design decisions. Create wireframes, prototypes, and high-fidelity mockups for websites and apps. Work closely with product teams to ensure designs align with business goals. Requires creativity, proficiency in design tools, and strong problem-solving skills. Must have a deep understanding of user-centered design principles and usability testing."
+
+    # 2. Initialize LangChain components)
     llm = ChatOpenAI(
         model="gpt-4o",
         temperature=0,
     )
-    
+
     embeddings = OpenAIEmbeddings()
     vectorstore = PineconeVectorStore(
         index_name=os.environ["INDEX_NAME"], embedding=embeddings
@@ -75,11 +54,11 @@ async def analyze_cv(cv: UploadFile = File(...), job_description: str = Form(...
 
     Task: Find resources that help improve this CV for this job.
     """
-    
+
     # Use the retriever directly to get documents, then combine them
     retriever = vectorstore.as_retriever()
-    retrieved_docs = await retriever.aget_relevant_documents(combined_query)
-    
+    retrieved_docs = retriever.invoke(combined_query)
+
     # Combine the documents into context
     context_text = "\n\n".join([doc.page_content for doc in retrieved_docs])
 
@@ -120,10 +99,6 @@ async def analyze_cv(cv: UploadFile = File(...), job_description: str = Form(...
         {{
           "suggestion": "Quantify your achievements wherever possible to demonstrate the impact of your work."
           "example": "E.g., Machine Learning Model for XYZ - Developed a machine learning model using Python and Scikit-learn to predict XYZ. The model achieved an accuracy of 85%."
-        }},
-        {{
-          "suggestion": "Consistent formatting of job titles and dates.",
-          "example": "E.g., Standardize employment date format—use 'Jan 2020 – Dec 2022' throughout CV."
         }}
       ],
       "score": 82
@@ -148,30 +123,14 @@ async def analyze_cv(cv: UploadFile = File(...), job_description: str = Form(...
     # 6. Create and run the combined chain
     analysis_chain = prompt | llm
 
-    result = await analysis_chain.ainvoke({
-        "cv_text": cv_text,
-        "job_description": job_description,
-        "context_text": context_text
-    })
+    result = analysis_chain.invoke(
+        {
+            "cv_text": cv_text,
+            "job_description": job_description,
+            "context_text": context_text,
+        }
+    )
 
-    # 7. Parse the LLM's JSON output
-    import json
 
-    try:
-        data = json.loads(result.content)
-        # Validate and coerce types
-        return MatchResult(
-            highlighted_matches=data.get("highlighted_matches", []),
-            missing_areas=data.get("missing_areas", []),
-            improvement_suggestions=data.get("improvement_suggestions", []),
-            score=int(data.get("score", 0)),
-        )
-    except Exception as e:
-        raise HTTPException(
-            status_code=500,
-            detail=f"LLM output parsing error: {e}\nRaw output: {result.content}",
-        )
+    print(result.content)
 
-port = 8001 
-if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=port, reload=True)
